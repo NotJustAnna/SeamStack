@@ -1,0 +1,7 @@
+packages:
+  - packages/*
+  - packages/create-seam/templates/*
+  - tests/*
+
+onlyBuiltDependencies:
+  - esbuild
