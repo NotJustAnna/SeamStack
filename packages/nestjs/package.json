@@ -1,0 +1,56 @@
+{
+  "name": "@seamstack/nestjs",
+  "version": "0.1.0",
+  "description": "NestJS backend adapter for SeamStack — mounts a Seam frontend on a Nest application and serves built assets.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter.d.ts",
+      "default": "./dist/adapter.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["seamstack", "nestjs", "nest", "backend", "adapter", "ssr"],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/nestjs"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@seamstack/core": "workspace:*",
+    "execa": "^9.5.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11",
+    "@nestjs/core": "^11",
+    "@nestjs/platform-express": "^11",
+    "@nestjs/serve-static": "^5"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.1.19",
+    "@nestjs/core": "^11.1.19",
+    "@nestjs/platform-express": "^11.1.18",
+    "@nestjs/serve-static": "^5.0.5",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  }
+}
