@@ -1,0 +1,49 @@
+{
+  "name": "@seamstack/angular",
+  "version": "0.1.0",
+  "description": "Angular frontend adapter for SeamStack — wires the Angular dev server and SSR build into the seam pipeline.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter.d.ts",
+      "default": "./dist/adapter.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["seamstack", "angular", "ssr", "adapter", "frontend"],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/angular"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@seamstack/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@angular-devkit/architect": "^0.1700.0 || ^0.1800.0 || ^0.1900.0 || ^0.2000.0 || ^0.2100.0",
+    "@angular-devkit/core": "^17 || ^18 || ^19 || ^20 || ^21"
+  },
+  "devDependencies": {
+    "@angular-devkit/architect": "^0.2102.8",
+    "@angular-devkit/core": "^21.2.8"
+  }
+}
