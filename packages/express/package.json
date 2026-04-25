@@ -1,0 +1,52 @@
+{
+  "name": "@seamstack/express",
+  "version": "0.1.0",
+  "description": "Express backend adapter for SeamStack — mounts a Seam frontend on an Express app and serves built assets.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter.d.ts",
+      "default": "./dist/adapter.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["seamstack", "express", "backend", "adapter", "ssr"],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/express"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@seamstack/core": "workspace:*",
+    "serve-static": "^1.16.2"
+  },
+  "peerDependencies": {
+    "express": "^4 || ^5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/serve-static": "^1.15.7",
+    "@types/supertest": "^6.0.2",
+    "express": "^5.0.0",
+    "supertest": "^7.0.0"
+  }
+}
