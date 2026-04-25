@@ -1,0 +1,48 @@
+{
+  "name": "@seamstack/elysia",
+  "version": "0.1.0",
+  "description": "Elysia backend adapter for SeamStack — mounts a Seam frontend on an Elysia app and serves built assets.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter.d.ts",
+      "default": "./dist/adapter.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["seamstack", "elysia", "backend", "adapter", "ssr"],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/elysia"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@elysiajs/static": "^1.2.0",
+    "@seamstack/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "elysia": "^1.2"
+  },
+  "devDependencies": {
+    "elysia": "^1.2.0"
+  }
+}
