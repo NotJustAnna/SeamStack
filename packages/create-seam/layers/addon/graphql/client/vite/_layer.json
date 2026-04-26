@@ -1,0 +1,5 @@
+{
+  "name": "addon:graphql/client/vite",
+  "description": "Minimal fetch-based GraphQL client at client/lib/graphql for Vite hosts.",
+  "hasJsVariant": true
+}

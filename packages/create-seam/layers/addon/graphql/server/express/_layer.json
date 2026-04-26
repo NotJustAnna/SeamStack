@@ -1,0 +1,8 @@
+{
+  "name": "addon:graphql/server/express",
+  "description": "Mount /graphql on Express via graphql-http.",
+  "deps": {
+    "graphql-http": "^1.22.4"
+  },
+  "hasJsVariant": true
+}

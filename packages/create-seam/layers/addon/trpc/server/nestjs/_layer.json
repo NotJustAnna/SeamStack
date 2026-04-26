@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/server/nestjs",
+  "description": "Mount tRPC under /trpc on NestJS via the express adapter (NestJS uses platform-express).",
+  "hasJsVariant": false
+}

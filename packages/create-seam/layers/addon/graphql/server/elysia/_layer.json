@@ -1,0 +1,8 @@
+{
+  "name": "addon:graphql/server/elysia",
+  "description": "Mount /graphql on Elysia via graphql-yoga.",
+  "deps": {
+    "graphql-yoga": "^5.16.0"
+  },
+  "hasJsVariant": true
+}

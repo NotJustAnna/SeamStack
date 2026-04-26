@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/server/elysia",
+  "description": "Mount tRPC under /trpc on Elysia via @elysiajs/trpc.",
+  "hasJsVariant": true
+}

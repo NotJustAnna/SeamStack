@@ -1,0 +1,5 @@
+{
+  "name": "addon:graphql/client/angular",
+  "description": "Minimal fetch-based GraphQL client at src/lib/graphql for Angular hosts.",
+  "hasJsVariant": true
+}

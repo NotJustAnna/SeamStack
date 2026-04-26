@@ -1,0 +1,14 @@
+{
+  "name": "addon:tailwind/astro",
+  "description": "Tailwind v4 in Astro via @tailwindcss/vite (Astro 5+).",
+  "devDeps": {
+    "tailwindcss": "^4.2.4",
+    "@tailwindcss/vite": "^4.2.4"
+  },
+  "astroConfig": {
+    "imports": ["import tailwindcss from '@tailwindcss/vite'"],
+    "configProps": {
+      "vite": "{ plugins: [tailwindcss()] }"
+    }
+  }
+}

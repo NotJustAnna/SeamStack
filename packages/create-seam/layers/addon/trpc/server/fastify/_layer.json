@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/server/fastify",
+  "description": "Mount tRPC under /trpc on Fastify via @trpc/server/adapters/fastify.",
+  "hasJsVariant": true
+}

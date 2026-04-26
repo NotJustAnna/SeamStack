@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/client/vite",
+  "description": "tRPC v11 typed client placed at client/lib/trpc for Vite hosts.",
+  "hasJsVariant": true
+}

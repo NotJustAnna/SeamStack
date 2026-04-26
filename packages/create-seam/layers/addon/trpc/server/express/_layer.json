@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/server/express",
+  "description": "Mount tRPC under /trpc on Express via @trpc/server/adapters/express.",
+  "hasJsVariant": true
+}

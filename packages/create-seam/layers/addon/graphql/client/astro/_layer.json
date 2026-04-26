@@ -1,0 +1,5 @@
+{
+  "name": "addon:graphql/client/astro",
+  "description": "Minimal fetch-based GraphQL client at src/lib/graphql for Astro hosts.",
+  "hasJsVariant": true
+}

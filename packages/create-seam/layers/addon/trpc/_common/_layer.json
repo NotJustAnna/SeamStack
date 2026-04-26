@@ -1,0 +1,9 @@
+{
+  "name": "addon:trpc/_common",
+  "description": "tRPC v11 router + typed client shared across backends.",
+  "deps": {
+    "@trpc/server": "^11.7.1",
+    "@trpc/client": "^11.7.1"
+  },
+  "hasJsVariant": true
+}

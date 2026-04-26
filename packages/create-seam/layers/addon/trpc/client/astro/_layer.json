@@ -1,0 +1,5 @@
+{
+  "name": "addon:trpc/client/astro",
+  "description": "tRPC v11 typed client placed at src/lib/trpc for Astro hosts.",
+  "hasJsVariant": true
+}

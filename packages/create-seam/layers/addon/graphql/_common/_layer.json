@@ -1,0 +1,8 @@
+{
+  "name": "addon:graphql/_common",
+  "description": "GraphQL schema + simple fetch client shared across backends.",
+  "deps": {
+    "graphql": "^16.11.0"
+  },
+  "hasJsVariant": true
+}
