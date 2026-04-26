@@ -1,0 +1,17 @@
+{
+  "name": "ui:astro/react",
+  "description": "React integration for Astro.",
+  "deps": {
+    "@astrojs/react": "^5.0.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDeps": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0"
+  },
+  "astroConfig": {
+    "imports": ["import react from '@astrojs/react'"],
+    "integrations": ["react()"]
+  }
+}

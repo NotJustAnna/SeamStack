@@ -1,0 +1,50 @@
+import './styles.css'
+{{#if hasTrpc}}
+import { trpc } from './lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from './lib/graphql'
+{{/if}}
+import { StrictMode, useEffect, useState } from 'react'
+import { createRoot } from 'react-dom/client'
+
+function App() {
+  const [msg, setMsg] = useState<string>('loading…')
+
+  useEffect(() => {
+    {{#if hasTrpc}}
+    trpc.hello.query()
+      .then((d) => setMsg(d.msg))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{else if hasGraphql}}
+    graphqlRequest<{ hello: string }>('{ hello }')
+      .then((d) => setMsg(d.hello))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{else}}
+    fetch('/api/hello')
+      .then((r) => r.json() as Promise<{ msg: string }>)
+      .then((d) => setMsg(d.msg))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{/if}}
+  }, [])
+
+  return (
+    <main {{#if hasTailwind}}className="font-sans p-8 max-w-2xl mx-auto"{{else}}style=\{{ fontFamily: 'system-ui, sans-serif', padding: 32 }}{{/if}}>
+      <h1{{#if hasTailwind}} className="text-3xl font-bold mb-2"{{/if}}>seamstack</h1>
+      <p{{#if hasTailwind}} className="mb-2"{{/if}}>vite + react, woven by seam.</p>
+      <p{{#if hasTailwind}} className="mb-2"{{/if}}>
+        <strong>/api/hello says:</strong>{' '}
+        <code{{#if hasTailwind}} className="px-1 py-0.5 bg-slate-100 rounded text-sm"{{/if}}>{msg}</code>
+      </p>
+    </main>
+  )
+}
+
+const rootEl = document.getElementById('root')
+if (!rootEl) throw new Error('#root missing')
+
+createRoot(rootEl).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)

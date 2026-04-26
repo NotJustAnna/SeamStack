@@ -1,0 +1,14 @@
+{
+  "name": "ui:vite/preact",
+  "description": "Preact UI for Vite.",
+  "deps": {
+    "preact": "^10.27.2"
+  },
+  "devDeps": {
+    "@preact/preset-vite": "^2.10.0"
+  },
+  "viteConfig": {
+    "imports": ["import preact from '@preact/preset-vite'"],
+    "plugins": ["preact()"]
+  }
+}

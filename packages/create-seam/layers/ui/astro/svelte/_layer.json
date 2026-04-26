@@ -1,0 +1,12 @@
+{
+  "name": "ui:astro/svelte",
+  "description": "Svelte integration for Astro.",
+  "deps": {
+    "@astrojs/svelte": "^8.0.4",
+    "svelte": "^5.44.1"
+  },
+  "astroConfig": {
+    "imports": ["import svelte from '@astrojs/svelte'"],
+    "integrations": ["svelte()"]
+  }
+}

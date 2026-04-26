@@ -1,0 +1,48 @@
+import './styles.css'
+{{#if hasTrpc}}
+import { trpc } from './lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from './lib/graphql'
+{{/if}}
+import { LitElement, html, css } from 'lit'
+import { customElement, state } from 'lit/decorators.js'
+
+@customElement('seam-app')
+export class SeamApp extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      font-family: system-ui, sans-serif;
+      padding: 32px;
+    }
+  `
+
+  @state() msg: string = 'loading…'
+
+  connectedCallback(): void {
+    super.connectedCallback()
+    {{#if hasTrpc}}
+    trpc.hello.query()
+      .then((d) => { this.msg = d.msg })
+      .catch((e: unknown) => { this.msg = 'error: ' + (e as Error).message })
+    {{else if hasGraphql}}
+    graphqlRequest<{ hello: string }>('{ hello }')
+      .then((d) => { this.msg = d.hello })
+      .catch((e: unknown) => { this.msg = 'error: ' + (e as Error).message })
+    {{else}}
+    fetch('/api/hello')
+      .then((r) => r.json() as Promise<{ msg: string }>)
+      .then((d) => { this.msg = d.msg })
+      .catch((e: unknown) => { this.msg = 'error: ' + (e as Error).message })
+    {{/if}}
+  }
+
+  render() {
+    return html`
+      <h1>seamstack</h1>
+      <p>vite + lit, woven by seam.</p>
+      <p><strong>/api/hello says:</strong> <code>${this.msg}</code></p>
+    `
+  }
+}

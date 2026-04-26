@@ -1,0 +1,27 @@
+<script>
+  {{#if hasTrpc}}
+  import { trpc } from '../lib/trpc'
+  {{/if}}
+  {{#if hasGraphql}}
+  import { graphqlRequest } from '../lib/graphql'
+  {{/if}}
+
+  let msg = $state('loading…')
+
+  {{#if hasTrpc}}
+  trpc.hello.query()
+    .then((d) => (msg = d.msg))
+    .catch((e) => (msg = 'error: ' + (e?.message ?? String(e))))
+  {{else if hasGraphql}}
+  graphqlRequest('{ hello }')
+    .then((d) => (msg = d.hello))
+    .catch((e) => (msg = 'error: ' + (e?.message ?? String(e))))
+  {{else}}
+  fetch('/api/hello')
+    .then((r) => r.json())
+    .then((d) => (msg = d.msg))
+    .catch((e) => (msg = 'error: ' + (e?.message ?? String(e))))
+  {{/if}}
+</script>
+
+<p{{#if hasTailwind}} class="mb-2"{{/if}}><strong>/api/hello says (Svelte):</strong> <code{{#if hasTailwind}} class="px-1 py-0.5 bg-slate-100 rounded text-sm"{{/if}}>{msg}</code></p>

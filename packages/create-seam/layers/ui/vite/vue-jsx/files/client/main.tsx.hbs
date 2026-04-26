@@ -1,0 +1,41 @@
+import './styles.css'
+{{#if hasTrpc}}
+import { trpc } from './lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from './lib/graphql'
+{{/if}}
+import { createApp, defineComponent, onMounted, ref } from 'vue'
+
+const App = defineComponent(() => {
+  const msg = ref<string>('loading…')
+
+  onMounted(() => {
+    {{#if hasTrpc}}
+    trpc.hello.query()
+      .then((d) => { msg.value = d.msg })
+      .catch((e: unknown) => { msg.value = 'error: ' + (e as Error).message })
+    {{else if hasGraphql}}
+    graphqlRequest<{ hello: string }>('{ hello }')
+      .then((d) => { msg.value = d.hello })
+      .catch((e: unknown) => { msg.value = 'error: ' + (e as Error).message })
+    {{else}}
+    fetch('/api/hello')
+      .then((r) => r.json() as Promise<{ msg: string }>)
+      .then((d) => { msg.value = d.msg })
+      .catch((e: unknown) => { msg.value = 'error: ' + (e as Error).message })
+    {{/if}}
+  })
+
+  return () => (
+    <main {{#if hasTailwind}}class="font-sans p-8 max-w-2xl mx-auto"{{else}}style=\{{ fontFamily: 'system-ui, sans-serif', padding: '32px' }}{{/if}}>
+      <h1{{#if hasTailwind}} class="text-3xl font-bold mb-2"{{/if}}>seamstack</h1>
+      <p{{#if hasTailwind}} class="mb-2"{{/if}}>vite + vue (jsx), woven by seam.</p>
+      <p{{#if hasTailwind}} class="mb-2"{{/if}}>
+        <strong>/api/hello says:</strong> <code{{#if hasTailwind}} class="px-1 py-0.5 bg-slate-100 rounded text-sm"{{/if}}>{msg.value}</code>
+      </p>
+    </main>
+  )
+})
+
+createApp(App).mount('#app')

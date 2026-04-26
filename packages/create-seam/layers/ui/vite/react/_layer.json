@@ -1,0 +1,17 @@
+{
+  "name": "ui:vite/react",
+  "description": "React UI for Vite (Babel plugin).",
+  "deps": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDeps": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.2.0"
+  },
+  "viteConfig": {
+    "imports": ["import react from '@vitejs/plugin-react'"],
+    "plugins": ["react()"]
+  }
+}

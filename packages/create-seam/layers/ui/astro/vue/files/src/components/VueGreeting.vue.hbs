@@ -1,0 +1,33 @@
+<script setup>
+{{#if hasTrpc}}
+import { trpc } from '../lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from '../lib/graphql'
+{{/if}}
+import { onMounted, ref } from 'vue'
+
+const msg = ref('loading…')
+
+onMounted(async () => {
+  try {
+    {{#if hasTrpc}}
+    const d = await trpc.hello.query()
+    msg.value = d.msg
+    {{else if hasGraphql}}
+    const d = await graphqlRequest('{ hello }')
+    msg.value = d.hello
+    {{else}}
+    const r = await fetch('/api/hello')
+    const d = await r.json()
+    msg.value = d.msg
+    {{/if}}
+  } catch (e) {
+    msg.value = 'error: ' + (e instanceof Error ? e.message : String(e))
+  }
+})
+</script>
+
+<template>
+  <p{{#if hasTailwind}} class="mb-2"{{/if}}><strong>/api/hello says (Vue):</strong> <code{{#if hasTailwind}} class="px-1 py-0.5 bg-slate-100 rounded text-sm"{{/if}}>\{{ msg }}</code></p>
+</template>

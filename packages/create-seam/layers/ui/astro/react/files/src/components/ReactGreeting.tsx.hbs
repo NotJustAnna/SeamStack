@@ -1,0 +1,35 @@
+import { useEffect, useState } from 'react'
+{{#if hasTrpc}}
+import { trpc } from '../lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from '../lib/graphql'
+{{/if}}
+
+export default function ReactGreeting() {
+  const [msg, setMsg] = useState<string>('loading…')
+
+  useEffect(() => {
+    {{#if hasTrpc}}
+    trpc.hello.query()
+      .then((d) => setMsg(d.msg))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{else if hasGraphql}}
+    graphqlRequest<{ hello: string }>('{ hello }')
+      .then((d) => setMsg(d.hello))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{else}}
+    fetch('/api/hello')
+      .then((r) => r.json() as Promise<{ msg: string }>)
+      .then((d) => setMsg(d.msg))
+      .catch((e: unknown) => setMsg(`error: ${(e as Error).message}`))
+    {{/if}}
+  }, [])
+
+  return (
+    <p{{#if hasTailwind}} className="mb-2"{{/if}}>
+      <strong>/api/hello says (React):</strong>{' '}
+      <code{{#if hasTailwind}} className="px-1 py-0.5 bg-slate-100 rounded text-sm"{{/if}}>{msg}</code>
+    </p>
+  )
+}

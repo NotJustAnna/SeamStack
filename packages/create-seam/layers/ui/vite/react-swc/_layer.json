@@ -1,0 +1,17 @@
+{
+  "name": "ui:vite/react-swc",
+  "description": "React UI for Vite (SWC plugin — faster).",
+  "deps": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDeps": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react-swc": "^4.3.0"
+  },
+  "viteConfig": {
+    "imports": ["import react from '@vitejs/plugin-react-swc'"],
+    "plugins": ["react()"]
+  }
+}

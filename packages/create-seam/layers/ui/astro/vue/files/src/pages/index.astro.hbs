@@ -1,0 +1,20 @@
+---
+import '../styles/global.css'
+import VueGreeting from '../components/VueGreeting.vue'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>seamstack — astro + vue</title>
+  </head>
+  <body>
+    <main {{#if hasTailwind}}class="font-sans p-8 max-w-2xl mx-auto"{{else}}style="font-family: system-ui, sans-serif; padding: 32px;"{{/if}}>
+      <h1{{#if hasTailwind}} class="text-3xl font-bold mb-2"{{/if}}>seamstack</h1>
+      <p{{#if hasTailwind}} class="mb-2"{{/if}}>astro + vue, woven by seam.</p>
+      <VueGreeting client:load />
+    </main>
+  </body>
+</html>

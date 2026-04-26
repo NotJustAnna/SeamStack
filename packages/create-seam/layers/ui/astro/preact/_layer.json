@@ -1,0 +1,12 @@
+{
+  "name": "ui:astro/preact",
+  "description": "Preact integration for Astro.",
+  "deps": {
+    "@astrojs/preact": "^5.1.1",
+    "preact": "^10.27.2"
+  },
+  "astroConfig": {
+    "imports": ["import preact from '@astrojs/preact'"],
+    "integrations": ["preact()"]
+  }
+}
