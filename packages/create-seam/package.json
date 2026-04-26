@@ -1,0 +1,51 @@
+{
+  "name": "create-seam",
+  "version": "0.1.0",
+  "description": "Scaffold a SeamStack project — pair any frontend with any backend.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "create-seam": "./dist/bin.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup && tsx scripts/build-templates.ts",
+    "build:layers": "tsx scripts/build-templates.ts",
+    "gen:js": "tsx scripts/generate-js-variants.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["seamstack", "scaffold", "create", "starter", "template"],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/create-seam"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.9.0",
+    "cac": "^6.7.14",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2"
+  }
+}
