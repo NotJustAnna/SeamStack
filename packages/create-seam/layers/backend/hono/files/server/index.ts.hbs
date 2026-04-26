@@ -1,0 +1,30 @@
+import { Hono } from 'hono'
+import { serve } from '@hono/node-server'
+import { serveStatic } from '@hono/node-server/serve-static'
+import { seam } from '@seamstack/hono'
+{{#if hasTrpc}}
+import { trpcMiddleware } from './trpc/mount.js'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlMiddleware } from './graphql/mount.js'
+{{/if}}
+
+const app = new Hono()
+
+const { inlay, host, port } = seam({ serveStatic, port: 3000 })
+
+app.use(inlay)
+
+app.get('/api/hello', (c) => c.json({ msg: 'hi from hono' }))
+{{#if hasTrpc}}
+app.use('/trpc/*', trpcMiddleware)
+{{/if}}
+{{#if hasGraphql}}
+app.use('/graphql', graphqlMiddleware)
+{{/if}}
+
+serve({ fetch: app.fetch, hostname: host, port }, (info) => {
+  console.log(
+    `Initialized a Hono-based backend!\n    Listening on http://${info.address}:${info.port}`,
+  )
+})

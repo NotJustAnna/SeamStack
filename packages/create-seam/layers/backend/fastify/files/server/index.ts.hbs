@@ -1,0 +1,26 @@
+import Fastify from 'fastify'
+import { seam } from '@seamstack/fastify'
+{{#if hasTrpc}}
+import { trpcPlugin, trpcOptions } from './trpc/mount.js'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlPlugin, graphqlOptions } from './graphql/mount.js'
+{{/if}}
+
+const app = Fastify()
+
+app.get('/api/hello', async () => ({ msg: 'hi from fastify' }))
+{{#if hasTrpc}}
+await app.register(trpcPlugin, { prefix: '/trpc', trpcOptions })
+{{/if}}
+{{#if hasGraphql}}
+await app.register(graphqlPlugin, graphqlOptions)
+{{/if}}
+
+const { inlay, host, port } = seam({ port: 3000 })
+await app.register(inlay)
+
+await app.listen({ port, host })
+console.log(
+  `Initialized a Fastify-based backend!\n    Listening on http://${host}:${port}`,
+)

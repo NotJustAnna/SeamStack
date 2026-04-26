@@ -1,0 +1,14 @@
+{
+  "name": "backend:hono",
+  "description": "Hono backend, mounted via @seamstack/hono.",
+  "deps": {
+    "@hono/node-server": "^1.14.0",
+    "@seamstack/hono": "workspace:*",
+    "hono": "^4.9.0"
+  },
+  "seamConfig": {
+    "imports": ["import hono from '@seamstack/hono/adapter'"],
+    "fabric": ["hono({ entry: './server/index.ts' })"]
+  },
+  "hasJsVariant": true
+}

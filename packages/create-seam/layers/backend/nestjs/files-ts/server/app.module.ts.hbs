@@ -1,0 +1,15 @@
+import { Module } from '@nestjs/common'
+import { SeamModule } from '@seamstack/nestjs'
+import { AppController } from './app.controller.js'
+{{#if hasTrpc}}
+import { TrpcModule } from './trpc/mount.js'
+{{/if}}
+{{#if hasGraphql}}
+import { GraphqlModule } from './graphql/mount.js'
+{{/if}}
+
+@Module({
+  imports: [SeamModule.forRoot(){{#if hasTrpc}}, TrpcModule{{/if}}{{#if hasGraphql}}, GraphqlModule{{/if}}],
+  controllers: [AppController],
+})
+export class AppModule {}

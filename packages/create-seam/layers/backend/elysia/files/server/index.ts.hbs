@@ -1,0 +1,26 @@
+import { Elysia } from 'elysia'
+import { node } from '@elysiajs/node'
+import { seam } from '@seamstack/elysia'
+{{#if hasTrpc}}
+import { trpcPlugin } from './trpc/mount.js'
+{{/if}}
+{{#if hasGraphql}}
+import { yogaHandler } from './graphql/mount.js'
+{{/if}}
+
+const { inlay, host, port } = seam({ port: 3000 })
+
+new Elysia({ adapter: node() })
+  .get('/api/hello', () => ({ msg: 'hi from elysia' }))
+{{#if hasTrpc}}
+  .use(trpcPlugin)
+{{/if}}
+{{#if hasGraphql}}
+  .all('/graphql', ({ request }) => yogaHandler.handle(request))
+{{/if}}
+  .use(await inlay)
+  .listen({ hostname: host, port }, () => {
+    console.log(
+      `Initialized an Elysia-based backend!\n    Listening on http://${host}:${port}`,
+    )
+  })

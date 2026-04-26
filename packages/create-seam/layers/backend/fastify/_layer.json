@@ -1,0 +1,13 @@
+{
+  "name": "backend:fastify",
+  "description": "Fastify backend, mounted via @seamstack/fastify.",
+  "deps": {
+    "@seamstack/fastify": "workspace:*",
+    "fastify": "^5.0.0"
+  },
+  "seamConfig": {
+    "imports": ["import fastify from '@seamstack/fastify/adapter'"],
+    "fabric": ["fastify({ entry: './server/index.ts' })"]
+  },
+  "hasJsVariant": true
+}

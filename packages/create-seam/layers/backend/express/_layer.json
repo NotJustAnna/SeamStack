@@ -1,0 +1,16 @@
+{
+  "name": "backend:express",
+  "description": "Express backend, mounted via @seamstack/express.",
+  "deps": {
+    "@seamstack/express": "workspace:*",
+    "express": "^4.21.0"
+  },
+  "devDeps": {
+    "@types/express": "^4.17.23"
+  },
+  "seamConfig": {
+    "imports": ["import express from '@seamstack/express/adapter'"],
+    "fabric": ["express({ entry: './server/index.ts' })"]
+  },
+  "hasJsVariant": true
+}
