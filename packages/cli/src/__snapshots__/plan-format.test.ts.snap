@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`formatPlan > renders all phases 1`] = `
+"Mode:        dev
+Public host: localhost
+Public port: 4567
+
+Services:
+  vite     role=asset-source mount=/        dev=4567 (public)  prod=(no runtime)
+  hono     role=asset-host   mount=/api     dev=41524 (internal)  prod=4567 (public)
+
+DEV
+  http://localhost:4567  →  vite (listens on 4567)
+                            └─ proxies /api/* → http://127.0.0.1:41524
+  hono runs via tsx (mode=dev, port=41524)
+
+BUILD
+  vite build → ./dist/client/
+  write       ./dist/_seam_prod.js  { assetsDir, indexHtml }
+  hono entry untouched
+
+START
+  http://localhost:4567  →  hono (tsx, cwd=./dist, mode=prod, port=4567)
+                            ├─ /api/* → user routes
+                            └─ /*       → ./dist/client + SPA fallback (via seam middleware reading _seam_prod.js)
+"
+`;
+
+exports[`formatPlan > renders dev phase only 1`] = `
+"Mode:        dev
+Public host: localhost
+Public port: 4567
+
+Services:
+  vite     role=asset-source mount=/        dev=4567 (public)  prod=(no runtime)
+  hono     role=asset-host   mount=/api     dev=41524 (internal)  prod=4567 (public)
+
+DEV
+  http://localhost:4567  →  vite (listens on 4567)
+                            └─ proxies /api/* → http://127.0.0.1:41524
+  hono runs via tsx (mode=dev, port=41524)
+"
+`;
+
+exports[`formatPlan > renders multi-route + plugins 1`] = `
+"Mode:        dev
+Public host: localhost
+Public port: 4567
+
+Services:
+  vite     role=asset-source mount=/        dev=4567 (public)  prod=(no runtime)
+  hono     role=asset-host   routes=[/api, /graphql] dev=41524 (internal)  prod=4567 (public)
+
+Plugins:
+  codegen  hooks=[dev]
+  graphql  hooks=[] routes=/graphql
+
+DEV
+  http://localhost:4567  →  vite (listens on 4567)
+                            ├─ proxies /api/* → http://127.0.0.1:41524
+                            └─ proxies /graphql/* → http://127.0.0.1:41524
+  hono runs via tsx (mode=dev, port=41524)
+
+BUILD
+  vite build → ./dist/client/
+  write       ./dist/_seam_prod.js  { assetsDir, indexHtml }
+  hono entry untouched
+
+START
+  http://localhost:4567  →  hono (tsx, cwd=./dist, mode=prod, port=4567)
+                            ├─ /api/* → user routes
+                            ├─ /graphql/* → user routes
+                            └─ /*       → ./dist/client + SPA fallback (via seam middleware reading _seam_prod.js)
+"
+`;
+
+exports[`formatPlan > renders start phase only 1`] = `
+"Mode:        dev
+Public host: localhost
+Public port: 4567
+
+Services:
+  vite     role=asset-source mount=/        dev=4567 (public)  prod=(no runtime)
+  hono     role=asset-host   mount=/api     dev=41524 (internal)  prod=4567 (public)
+
+START
+  http://localhost:4567  →  hono (tsx, cwd=./dist, mode=prod, port=4567)
+                            ├─ /api/* → user routes
+                            └─ /*       → ./dist/client + SPA fallback (via seam middleware reading _seam_prod.js)
+"
+`;
