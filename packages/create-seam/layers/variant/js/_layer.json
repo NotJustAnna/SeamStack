@@ -1,0 +1,4 @@
+{
+  "name": "variant:js",
+  "description": "JavaScript variant: no typescript dep, no tsconfig.json."
+}

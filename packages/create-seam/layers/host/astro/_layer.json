@@ -1,0 +1,16 @@
+{
+  "name": "host:astro",
+  "description": "Astro host: astro.config integrations list + seam adapter.",
+  "deps": {
+    "astro": "^6.1.8"
+  },
+  "devDeps": {
+    "@seamstack/cli": "workspace:*",
+    "@seamstack/astro": "workspace:*",
+    "tsx": "^4.21.0"
+  },
+  "seamConfig": {
+    "imports": ["import astro from '@seamstack/astro/adapter'"],
+    "fabric": ["astro()"]
+  }
+}

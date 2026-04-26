@@ -1,0 +1,4 @@
+{
+  "name": "seam-glue:angular",
+  "description": "Angular seam-glue placeholder. The angular adapter is wired by the host layer; nothing extra needed here."
+}

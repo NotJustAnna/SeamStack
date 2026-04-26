@@ -1,0 +1,4 @@
+{
+  "name": "seam-glue:astro",
+  "description": "Astro seam-glue placeholder. The astro adapter is wired by the host layer; nothing extra needed here."
+}

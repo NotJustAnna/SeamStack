@@ -1,0 +1,8 @@
+{
+  "name": "seam-glue:vite",
+  "description": "Adds the SeamStack vite() plugin to vite.config; runs after UI plugins so the canonical order is [framework(), seam()].",
+  "viteConfig": {
+    "imports": ["import { seam } from '@seamstack/vite'"],
+    "plugins": ["seam()"]
+  }
+}

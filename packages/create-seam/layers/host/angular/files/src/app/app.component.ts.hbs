@@ -1,0 +1,36 @@
+import { Component, signal } from '@angular/core'
+{{#if hasTrpc}}
+import { trpc } from '../lib/trpc'
+{{/if}}
+{{#if hasGraphql}}
+import { graphqlRequest } from '../lib/graphql'
+{{/if}}
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  template: `
+    <main {{#if hasTailwind}}class="font-sans p-8 max-w-2xl mx-auto"{{/if}}>
+      <h1{{#if hasTailwind}} class="text-3xl font-bold mb-2"{{/if}}>Angular + Seam</h1>
+      <p{{#if hasTailwind}} class="mb-2"{{/if}}>API says: \{{ message() }}</p>
+      <button{{#if hasTailwind}} class="px-3 py-1 rounded bg-slate-100 hover:bg-slate-200"{{/if}} (click)="ping()">ping</button>
+    </main>
+  `,
+})
+export class AppComponent {
+  readonly message = signal('—')
+
+  async ping(): Promise<void> {
+    {{#if hasTrpc}}
+    const data = await trpc.hello.query()
+    this.message.set(data.msg)
+    {{else if hasGraphql}}
+    const data = await graphqlRequest<{ hello: string }>('{ hello }')
+    this.message.set(data.hello)
+    {{else}}
+    const r = await fetch('/api/hello')
+    const data = (await r.json()) as { msg: string }
+    this.message.set(data.msg)
+    {{/if}}
+  }
+}

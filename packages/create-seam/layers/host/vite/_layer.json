@@ -1,0 +1,14 @@
+{
+  "name": "host:vite",
+  "description": "Vite host: vite + seam adapter (vite plugin contributed by seam-glue/vite).",
+  "devDeps": {
+    "@seamstack/cli": "workspace:*",
+    "@seamstack/vite": "workspace:*",
+    "tsx": "^4.21.0",
+    "vite": "^7.3.2"
+  },
+  "seamConfig": {
+    "imports": ["import vite from '@seamstack/vite/adapter'"],
+    "fabric": ["vite({ root: './client' })"]
+  }
+}

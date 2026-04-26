@@ -1,0 +1,7 @@
+{
+  "name": "variant:ts",
+  "description": "TypeScript variant: pull in typescript devDep. tsconfig is generated.",
+  "devDeps": {
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "base",
+  "description": "Project skeleton: package.json, README, .gitignore, base scripts.",
+  "pkgOverrides": {
+    "version": "0.0.0",
+    "private": true,
+    "type": "module"
+  },
+  "scripts": {
+    "dev": "seam dev",
+    "build": "seam build",
+    "start": "seam start",
+    "plan": "seam plan"
+  }
+}
