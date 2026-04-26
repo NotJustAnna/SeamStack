@@ -1,0 +1,25 @@
+{
+  "name": "e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@seamstack/angular": "workspace:*",
+    "@seamstack/astro": "workspace:*",
+    "@seamstack/cli": "workspace:*",
+    "@seamstack/elysia": "workspace:*",
+    "@seamstack/express": "workspace:*",
+    "@seamstack/fastify": "workspace:*",
+    "@seamstack/hono": "workspace:*",
+    "@seamstack/nestjs": "workspace:*",
+    "@seamstack/vite": "workspace:*"
+  },
+  "devDependencies": {
+    "execa": "^9.5.1",
+    "tsx": "^4.21.0"
+  }
+}
