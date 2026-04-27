@@ -93,7 +93,15 @@ export function buildSpawnEnv(
     env[k] = v
   }
   const binDir = join(cwd, 'node_modules', '.bin')
-  env['PATH'] = env['PATH'] ? `${binDir}${delimiter}${env['PATH']}` : binDir
+  const pathKey = process.platform === 'win32' ? 'Path' : 'PATH'
+  let existing = ''
+  for (const k of Object.keys(env)) {
+    if (k.toLowerCase() === 'path') {
+      if (env[k]) existing = env[k]
+      if (k !== pathKey) delete env[k]
+    }
+  }
+  env[pathKey] = existing ? `${binDir}${delimiter}${existing}` : binDir
   return env
 }
 
