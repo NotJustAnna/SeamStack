@@ -61,13 +61,26 @@ function runIn(cwd: string, cmd: string, args: string[]): Promise<void> {
   return new Promise((res, rej) => {
     const child = spawn(cmd, args, {
       cwd,
-      stdio: 'ignore',
+      stdio: ['ignore', 'ignore', 'pipe'],
       shell: process.platform === 'win32',
+    })
+    let stderr = ''
+    child.stderr?.on('data', (d) => {
+      stderr += d.toString()
     })
     child.once('error', rej)
     child.once('close', (code) => {
       if (code === 0) res()
-      else rej(new Error(`${cmd} exited with code ${code}`))
+      else {
+        const detail = stderr.trim().split('\n')[0]
+        rej(
+          new Error(
+            detail
+              ? `${cmd} exited with code ${code}: ${detail}`
+              : `${cmd} exited with code ${code}`,
+          ),
+        )
+      }
     })
   })
 }
