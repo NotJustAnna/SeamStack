@@ -10,12 +10,8 @@ export default defineConfig({
     teardownTimeout: 60_000,
     globalSetup: enabled ? ['./global-setup.ts'] : [],
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        maxThreads: Number(process.env.MATRIX_WORKERS ?? 4),
-        minThreads: 1,
-      },
-    },
+    maxWorkers: Number(process.env.MATRIX_WORKERS ?? 4),
+    minWorkers: 1,
     fileParallelism: true,
     bail: process.env.MATRIX_BAIL === '1' ? 1 : 0,
   },

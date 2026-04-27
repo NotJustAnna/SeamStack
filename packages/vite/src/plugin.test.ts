@@ -4,8 +4,13 @@ import { VITE_WIRE_ENV, writeViteWire } from './wire.js'
 
 function callConfig(plugin: ReturnType<typeof seam>, command: 'serve' | 'build' = 'serve') {
   const hook = plugin.config
-  if (typeof hook !== 'function') throw new Error('config hook is not callable')
-  return hook({}, { command, mode: 'development', isPreview: false, isSsrBuild: false })
+  // Vite types `config` as `ObjectHook<fn>` — either the function or `{handler, order}`.
+  // The hook here doesn't read `this`, so cast to a plain callable for the test.
+  const fn = (typeof hook === 'function' ? hook : hook?.handler) as
+    | ((c: Record<string, unknown>, e: { command: 'serve' | 'build'; mode: string; isPreview: boolean; isSsrBuild: boolean }) => unknown)
+    | undefined
+  if (!fn) throw new Error('config hook is not callable')
+  return fn({}, { command, mode: 'development', isPreview: false, isSsrBuild: false })
 }
 
 describe('@seamstack/vite plugin', () => {
