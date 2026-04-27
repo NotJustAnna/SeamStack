@@ -15,7 +15,7 @@
   "bin": {
     "create-seam": "./dist/bin.js"
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsup && tsx scripts/build-templates.ts",
     "build:layers": "tsx scripts/build-templates.ts",
