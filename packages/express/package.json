@@ -37,14 +37,14 @@
   },
   "dependencies": {
     "@seamstack/core": "workspace:*",
-    "serve-static": "^1.16.2"
+    "serve-static": "^2.2.1"
   },
   "peerDependencies": {
     "express": "^4 || ^5"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/serve-static": "^1.15.7",
+    "@types/serve-static": "^2.2.0",
     "@types/supertest": "^7.2.0",
     "express": "^5.0.0",
     "supertest": "^7.0.0"

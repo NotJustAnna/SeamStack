@@ -44,7 +44,7 @@ describe('express runtime serveAssets (serve-static)', () => {
   it('serves a JS asset with correct MIME', async () => {
     const res = await request(app).get('/assets/main.js')
     expect(res.status).toBe(200)
-    expect(res.headers['content-type']).toContain('application/javascript')
+    expect(res.headers['content-type']).toMatch(/(application|text)\/javascript/)
     expect(res.text).toContain('console.log')
   })
 
