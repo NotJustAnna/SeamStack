@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/vite",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vite frontend adapter and plugin for SeamStack — wires Vite's dev server and SSR build into the seam pipeline.",
   "type": "module",
   "exports": {

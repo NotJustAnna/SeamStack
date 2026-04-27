@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The `seam` command — dev, build, plan, and start any SeamStack project.",
   "type": "module",
   "main": "./dist/index.js",

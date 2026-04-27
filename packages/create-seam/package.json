@@ -1,6 +1,6 @@
 {
   "name": "create-seam",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scaffold a SeamStack project — pair any frontend with any backend.",
   "type": "module",
   "main": "./dist/index.js",

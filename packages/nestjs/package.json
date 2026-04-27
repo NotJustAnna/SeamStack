@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/nestjs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "NestJS backend adapter for SeamStack — mounts a Seam frontend on a Nest application and serves built assets.",
   "type": "module",
   "exports": {
