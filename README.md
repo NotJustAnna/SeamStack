@@ -130,7 +130,7 @@ The difference is curation: those projects pick a frontend pair and bless it. Se
 
 ## Status
 
-**v0.1.0.** APIs may shift. The plugin layer (`SeamPlugin`) and multi-entrypoint composition (`defineStitch`) appear in the type system; neither does anything at runtime yet.
+**v0.2.0.** APIs may shift. The plugin layer (`SeamPlugin`) is wired through the resolver and runs at dev/build/start. Multi-entrypoint composition (`defineStitch`) is still type-only — single-entrypoint projects are the supported shape today.
 
 ## License
 
