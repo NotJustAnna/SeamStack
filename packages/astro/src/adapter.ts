@@ -100,7 +100,7 @@ export default function astro(opts: AstroAdapterOptions = {}): Serveable {
         worker.once('error', onError)
       })
 
-      worker.on('error', (err) => {
+      worker.on('error', (err: Error) => {
         if (stopping) return
         process.stderr.write(`[astro worker error] ${err.stack ?? err.message}\n`)
       })

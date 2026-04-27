@@ -20,7 +20,7 @@
     "create-seam": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^25.6.0",
     "execa": "^9.5.1",
     "get-port": "^7.1.0",
     "playwright": "^1.48.0",

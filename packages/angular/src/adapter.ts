@@ -212,7 +212,7 @@ export default function angular(opts: AngularAdapterOptions = {}): Serveable {
         worker.once('error', onError)
       })
 
-      worker.on('error', (err) => {
+      worker.on('error', (err: Error) => {
         if (stopping) return
         process.stderr.write(
           `[angular worker error] ${err.stack ?? err.message}\n`,
