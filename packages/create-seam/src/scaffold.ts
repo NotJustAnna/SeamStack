@@ -19,7 +19,7 @@ export interface ScaffoldInput {
 
 export async function scaffold(input: ScaffoldInput): Promise<void> {
   const writeSpin = p.spinner()
-  writeSpin.start(`Composing ${pc.cyan(input.spec.name)} from layers`)
+  writeSpin.start(`Tailoring ${pc.cyan(input.spec.name)}`)
   await fs.mkdir(input.targetDir, { recursive: true })
   await composeProject(input.spec, input.targetDir, {
     warn: (m) => writeSpin.message(pc.dim(m)),
@@ -29,7 +29,7 @@ export async function scaffold(input: ScaffoldInput): Promise<void> {
 
   if (input.git) {
     const gitSpin = p.spinner()
-    gitSpin.start('Initializing git repository')
+    gitSpin.start('Stitching the first commit')
     try {
       await runIn(input.targetDir, 'git', ['init', '-q'])
       await runIn(input.targetDir, 'git', ['add', '.'])
@@ -47,7 +47,7 @@ export async function scaffold(input: ScaffoldInput): Promise<void> {
 
   if (input.install) {
     const installSpin = p.spinner()
-    installSpin.start(`Installing dependencies with ${pc.cyan(input.pm)}`)
+    installSpin.start(`Threading dependencies with ${pc.cyan(input.pm)}`)
     try {
       await runIn(input.targetDir, input.pm, ['install'])
       installSpin.stop('Dependencies installed')

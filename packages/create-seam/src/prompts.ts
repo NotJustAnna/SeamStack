@@ -52,7 +52,7 @@ export interface PromptResult {
 }
 
 export async function runPrompts(input: PromptInput): Promise<PromptResult> {
-  p.intro(pc.bold(pc.cyan('create-seam')))
+  p.intro(`${pc.bold(pc.cyan('create-seam'))} ${pc.dim('— ready for a seamless fullstack experience?')}`)
 
   const name = await ensureName(input.name)
   const targetDir = resolve(input.cwd, name)
@@ -116,7 +116,7 @@ async function ensureName(initial: string | undefined): Promise<string> {
 async function ensureHost(initial: Host | undefined): Promise<Host> {
   if (initial) return initial
   const value = await p.select({
-    message: 'Pick a frontend host',
+    message: 'Pick a frontend fabric',
     options: HOSTS.map((h) => ({
       value: h,
       label: HOST_LABEL[h],
@@ -172,7 +172,7 @@ async function ensureVariant(initial: Variant | undefined): Promise<Variant> {
 async function ensureBackend(initial: Backend | undefined): Promise<Backend> {
   if (initial) return initial
   const value = await p.select({
-    message: 'Pick a backend',
+    message: 'Pick a backend fabric',
     options: BACKENDS.map((b) => ({ value: b, label: BACKEND_LABEL[b] })),
     initialValue: 'hono' as Backend,
   })
