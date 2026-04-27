@@ -1,0 +1,4 @@
+node_modules
+.verdaccio-storage
+.verdaccio-config
+.tmp

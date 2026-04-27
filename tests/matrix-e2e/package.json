@@ -1,0 +1,31 @@
+{
+  "name": "matrix-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "MATRIX_E2E=1 vitest run",
+    "test:filter": "MATRIX_E2E=1 vitest run"
+  },
+  "dependencies": {
+    "@seamstack/angular": "workspace:*",
+    "@seamstack/astro": "workspace:*",
+    "@seamstack/cli": "workspace:*",
+    "@seamstack/elysia": "workspace:*",
+    "@seamstack/express": "workspace:*",
+    "@seamstack/fastify": "workspace:*",
+    "@seamstack/hono": "workspace:*",
+    "@seamstack/nestjs": "workspace:*",
+    "@seamstack/vite": "workspace:*",
+    "create-seam": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "execa": "^9.5.1",
+    "get-port": "^7.1.0",
+    "playwright": "^1.48.0",
+    "tsx": "^4.21.0",
+    "verdaccio": "^6.0.0",
+    "vitest": "^2.1.0"
+  }
+}
