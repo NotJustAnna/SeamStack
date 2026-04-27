@@ -16,10 +16,15 @@
     "@seamstack/fastify": "workspace:*",
     "@seamstack/hono": "workspace:*",
     "@seamstack/nestjs": "workspace:*",
-    "@seamstack/vite": "workspace:*"
+    "@seamstack/vite": "workspace:*",
+    "create-seam": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "execa": "^9.5.1",
-    "tsx": "^4.21.0"
+    "get-port": "^7.1.0",
+    "tsx": "^4.21.0",
+    "verdaccio": "^6.0.0",
+    "vitest": "^4.1.5"
   }
 }
