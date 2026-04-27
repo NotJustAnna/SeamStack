@@ -166,7 +166,8 @@ function parseAddons(value: string | undefined): Addon[] {
 function buildOutro(opts: { name: string; pm: PackageManager; install: boolean }): string {
   const lines = [pc.green('Done.'), '', pc.dim('Next:'), `  cd ${opts.name}`]
   if (!opts.install) lines.push(`  ${opts.pm} install`)
-  lines.push(`  ${opts.pm} dev`)
+  const devCmd = opts.pm === 'npm' ? 'npm run dev' : `${opts.pm} dev`
+  lines.push(`  ${devCmd}`)
   return lines.join('\n')
 }
 
