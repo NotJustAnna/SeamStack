@@ -13,16 +13,22 @@ bun  create seam@latest     my-app
 
 ```
 create-seam [name]
-  --frontend <vite|astro|angular>
+  --host     <vite|astro|angular>             # frontend host
+  --ui       <name>                           # vite: one of vanilla|vue|react|preact|svelte|solid|lit|qwik
+                                              # astro: comma-separated subset of react|vue|svelte|solid|preact|alpine|mdx
+                                              #        (omit for vanilla Astro)
   --backend  <hono|express|fastify|elysia|nestjs>
-  --variant  <js|ts>           # only meaningful for non-Angular, non-NestJS pairs
+  --variant  <js|ts>                          # only meaningful for non-Angular, non-NestJS pairs
+  --addons   <names>                          # comma-separated: tailwind|trpc|graphql
   --pm       <pnpm|npm|yarn|bun>
-  --no-install                 # skip dependency install
-  --no-git                     # skip `git init`
-  --force                      # overwrite a non-empty target
+  --no-install                                # skip dependency install
+  --no-git                                    # skip `git init`
+  --force                                     # overwrite a non-empty target
 ```
 
-If you provide a name and frontend/backend/variant, the scaffolder runs headlessly. Otherwise it falls through to an interactive prompt.
+If you provide a name plus `--host` and `--backend`, the scaffolder runs headlessly. Otherwise it falls through to an interactive prompt.
+
+`--frontend` is accepted as a deprecated alias of `--host`.
 
 ## Support matrix (23 templates)
 
