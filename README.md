@@ -1,5 +1,7 @@
 # SeamStack
 
+![SeamStack showcase](./showcase.svg)
+
 SeamStack is the thinnest thing you can put between a frontend tool that doesn't care what serves it and a backend tool that doesn't care what files it ships. One public port, one config file, three commands. No "platform." As little glue code as possible. The frontend's built-in proxying.
 
 This started because I wanted a Fastify backend and a React frontend in the same Docker container, and discovered — through a series of escalating compromises with `vite.config.ts` — that the JavaScript ecosystem has quietly decided this is a framework-shaped problem.
