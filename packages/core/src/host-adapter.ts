@@ -1,5 +1,6 @@
+import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
-import { delimiter, join, resolve } from 'node:path'
+import { basename, delimiter, extname, join, resolve } from 'node:path'
 import { execa, type ResultPromise } from 'execa'
 import { wrapStream } from './ansi-stream.js'
 import type {
@@ -8,6 +9,7 @@ import type {
   DevHandle,
   BuildContext,
   BuildOutput,
+  WatchHandle,
   StartContext,
   StartHandle,
 } from './types.js'
@@ -216,25 +218,89 @@ export function createHostServeable(opts: HostAdapterOptions): Serveable {
           `[@seamstack/${opts.framework}/adapter] build expected an asset-source peer with assetsDir and indexHtml`,
         )
       }
-      await mkdir(ctx.outDir, { recursive: true })
-      const manifestPath = join(ctx.outDir, '_seam_prod.js')
-      const manifest = {
-        assetsDir: peer.assetsDir,
-        indexHtml: peer.indexHtml,
+      const serverDir = join(ctx.outDir, 'server')
+      await mkdir(serverDir, { recursive: true })
+
+      const entryPath = entryFor(ctx.cwd)
+      const isTs = /\.[mc]?tsx?$/.test(opts.entry)
+      if (isTs) {
+        const outName = basename(opts.entry, extname(opts.entry)) + '.js'
+        const { build: esbuild } = await import('esbuild')
+        await esbuild({
+          entryPoints: [entryPath],
+          outfile: join(serverDir, outName),
+          bundle: true,
+          platform: 'node',
+          format: 'esm',
+          packages: 'external',
+          target: 'node20',
+          sourcemap: true,
+        })
       }
+
+      const manifest = { assetsDir: peer.assetsDir, indexHtml: peer.indexHtml }
       const content = `export default ${JSON.stringify(manifest, null, 2)}\n`
-      await writeFile(manifestPath, content, 'utf8')
+      await writeFile(join(serverDir, '_seam_prod.js'), content, 'utf8')
       return {}
     },
+    async watch(ctx: BuildContext): Promise<WatchHandle> {
+      const serverDir = join(ctx.outDir, 'server')
+      await mkdir(serverDir, { recursive: true })
+
+      const entryPath = entryFor(ctx.cwd)
+      const isTs = /\.[mc]?tsx?$/.test(opts.entry)
+
+      if (!isTs) return { stop: () => {} }
+
+      const outName = basename(opts.entry, extname(opts.entry)) + '.js'
+      const { context } = await import('esbuild')
+      const esbuildCtx = await context({
+        entryPoints: [entryPath],
+        outfile: join(serverDir, outName),
+        bundle: true,
+        platform: 'node',
+        format: 'esm',
+        packages: 'external',
+        target: 'node20',
+        sourcemap: true,
+      })
+      await esbuildCtx.watch()
+
+      return {
+        async stop() {
+          await esbuildCtx.dispose()
+        },
+      }
+    },
     async start(ctx: StartContext): Promise<StartHandle> {
+      const serverDir = join(ctx.outDir, 'server')
+      const isTs = /\.[mc]?tsx?$/.test(opts.entry)
+      const outName = basename(opts.entry, extname(opts.entry)) + '.js'
+      const compiledEntry = join(serverDir, outName)
+      const useCompiled = isTs && existsSync(compiledEntry)
+
       const wire = opts.writeWireEnv({
         mode: ctx.mode,
         host: ctx.publicHost,
         port: ctx.assignedPort,
-        distDir: ctx.outDir,
+        distDir: serverDir,
       })
       const env = buildSpawnEnv(ctx.cwd, wire)
-      const child = spawnTsx(entryFor(ctx.cwd), env, ctx.outDir, undefined, opts.framework)
+
+      let child: SpawnedChild
+      if (useCompiled) {
+        child = execa('node', [compiledEntry], {
+          env,
+          cwd: ctx.outDir,
+          stdio: ['inherit', 'pipe', 'pipe'],
+          reject: false,
+          detached: true,
+        })
+        wrapStream(opts.framework, child.stdout)
+        wrapStream(opts.framework, child.stderr)
+      } else {
+        child = spawnTsx(entryFor(ctx.cwd), env, ctx.outDir, undefined, opts.framework)
+      }
       child.catch(() => {
         /* swallow */
       })

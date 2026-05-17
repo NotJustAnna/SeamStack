@@ -14,7 +14,7 @@ function makeAdapter() {
   return createHostServeable({
     framework: 'test',
     defaultMountPath: '/api',
-    entry: './server.ts',
+    entry: './server.js',
     writeWireEnv(input) {
       return { [ENV_KEY]: JSON.stringify(input) }
     },
@@ -68,7 +68,7 @@ describe('createHostServeable', () => {
       },
     })
     expect(result).toEqual({})
-    const manifestPath = join(dir, '_seam_prod.js')
+    const manifestPath = join(dir, 'server', '_seam_prod.js')
     const content = await readFile(manifestPath, 'utf8')
     expect(content).toContain('"assetsDir": "/abs/dist/client"')
     expect(content).toContain('"indexHtml": "/abs/dist/client/index.html"')

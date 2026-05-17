@@ -77,6 +77,9 @@ importers:
 
   packages/core:
     dependencies:
+      esbuild:
+        specifier: ^0.28.0
+        version: 0.28.0
       execa:
         specifier: ^9.5.1
         version: 9.6.1

@@ -106,6 +106,11 @@ export interface DevHandle {
   stop(): Promise<void> | void
 }
 
+/** Returned from {@link Serveable.watch}. The CLI calls `stop()` on shutdown. */
+export interface WatchHandle {
+  stop(): Promise<void> | void
+}
+
 /**
  * Returned from {@link Serveable.build}.
  *
@@ -184,6 +189,7 @@ export interface Serveable {
   readonly routes?: readonly string[]
   dev(ctx: DevContext): Promise<DevHandle>
   build(ctx: BuildContext): Promise<BuildOutput>
+  watch?(ctx: BuildContext): Promise<WatchHandle>
   start(ctx: StartContext): Promise<StartHandle>
 }
 
