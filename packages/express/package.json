@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/express",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Express backend adapter for SeamStack — mounts a Seam frontend on an Express app and serves built assets.",
   "type": "module",
   "exports": {
