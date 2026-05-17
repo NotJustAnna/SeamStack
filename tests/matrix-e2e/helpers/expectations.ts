@@ -13,7 +13,7 @@ export function buildExpectations(spec: MatrixSpec): BuildExpectations {
   // host-specific files would be brittle without buying any extra coverage —
   // the start-probe + dev-probe afterwards is what actually proves the build is
   // serviceable.
-  return { artifacts: ['dist/_seam_prod.js'] }
+  return { artifacts: ['dist/server/_seam_prod.js'] }
 }
 
 export interface PageExpectations {

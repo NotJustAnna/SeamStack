@@ -63,7 +63,7 @@ describe('seam build → seam start (vite + fastify)', () => {
     const build = await runSeam(['build'], { cwd: EXAMPLE_DIR_FASTIFY })
     expect(build.exitCode, build.all).toBe(0)
     expect(existsSync(join(DIST, 'client', 'index.html'))).toBe(true)
-    expect(existsSync(join(DIST, '_seam_prod.js'))).toBe(true)
+    expect(existsSync(join(DIST, 'server', '_seam_prod.js'))).toBe(true)
 
     started = spawnSeam(['start'], { cwd: EXAMPLE_DIR_FASTIFY })
     await waitForPort(PORT, 30_000)

@@ -63,7 +63,7 @@ describe('seam build → seam start (angular + hono)', () => {
     const build = await runSeam(['build'], { cwd: EXAMPLE_DIR_ANGULAR_HONO })
     expect(build.exitCode, build.all).toBe(0)
     expect(existsSync(join(DIST, 'client', 'browser', 'index.html'))).toBe(true)
-    expect(existsSync(join(DIST, '_seam_prod.js'))).toBe(true)
+    expect(existsSync(join(DIST, 'server', '_seam_prod.js'))).toBe(true)
 
     started = spawnSeam(['start'], { cwd: EXAMPLE_DIR_ANGULAR_HONO })
     await waitForPort(PORT, 30_000)
