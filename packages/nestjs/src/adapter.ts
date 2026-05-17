@@ -160,13 +160,14 @@ export default function nestjs(opts: NestjsAdapterOptions = {}): Serveable {
       if ((result.exitCode ?? 0) !== 0) {
         throw new Error('[@seamstack/nestjs/adapter] `nest build` failed')
       }
-      await mkdir(ctx.outDir, { recursive: true })
+      const serverDir = join(ctx.outDir, 'server')
+      await mkdir(serverDir, { recursive: true })
       const manifest = {
         assetsDir: peer.assetsDir,
         indexHtml: peer.indexHtml,
       }
       const content = `export default ${JSON.stringify(manifest, null, 2)}\n`
-      await writeFile(join(ctx.outDir, '_seam_prod.js'), content, 'utf8')
+      await writeFile(join(serverDir, '_seam_prod.js'), content, 'utf8')
       return {}
     },
     async start(ctx: StartContext): Promise<StartHandle> {
@@ -182,7 +183,7 @@ export default function nestjs(opts: NestjsAdapterOptions = {}): Serveable {
           mode: 'prod',
           host: ctx.publicHost,
           port: ctx.assignedPort,
-          distDir: ctx.outDir,
+          distDir: join(ctx.outDir, 'server'),
         }),
       }
       const env = buildSpawnEnv(ctx.cwd, wire)
