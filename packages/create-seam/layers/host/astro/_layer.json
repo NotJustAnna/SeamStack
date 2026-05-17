@@ -9,6 +9,9 @@
     "@seamstack/astro": "workspace:*",
     "tsx": "^4.21.0"
   },
+  "scripts": {
+    "typecheck": "astro check && tsc -p server/tsconfig.json"
+  },
   "seamConfig": {
     "imports": ["import astro from '@seamstack/astro/adapter'"],
     "fabric": ["astro()"]

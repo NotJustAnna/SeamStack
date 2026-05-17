@@ -109,4 +109,10 @@ describe('isAddonCompatible', () => {
     expect(isAddonCompatible(spec({ ui: 'vanilla' }), 'trpc')).toBe(false)
     expect(isAddonCompatible(spec({ ui: 'react' }), 'trpc')).toBe(true)
   })
+
+  it('shared is compatible with vite and astro but not angular', () => {
+    expect(isAddonCompatible(spec({}), 'shared')).toBe(true)
+    expect(isAddonCompatible(spec({ host: 'astro', ui: ['react'] }), 'shared')).toBe(true)
+    expect(isAddonCompatible(spec({ host: 'angular', ui: null }), 'shared')).toBe(false)
+  })
 })

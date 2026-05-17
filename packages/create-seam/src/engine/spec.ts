@@ -1,7 +1,7 @@
 export type Host = 'vite' | 'astro' | 'angular'
 export type Backend = 'hono' | 'express' | 'fastify' | 'elysia' | 'nestjs'
 export type Variant = 'ts' | 'js'
-export type Addon = 'tailwind' | 'trpc' | 'graphql'
+export type Addon = 'tailwind' | 'trpc' | 'graphql' | 'shared'
 
 export type ViteUi =
   | 'vanilla'
@@ -25,7 +25,7 @@ export const BACKENDS = [
   'nestjs',
 ] as const satisfies readonly Backend[]
 export const VARIANTS = ['ts', 'js'] as const satisfies readonly Variant[]
-export const ADDONS = ['tailwind', 'trpc', 'graphql'] as const satisfies readonly Addon[]
+export const ADDONS = ['tailwind', 'trpc', 'graphql', 'shared'] as const satisfies readonly Addon[]
 
 export const VITE_UIS = [
   'vanilla',

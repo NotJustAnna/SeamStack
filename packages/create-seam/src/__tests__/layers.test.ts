@@ -37,6 +37,11 @@ describe('resolveLayers', () => {
     expect(ids).toContain('addon/graphql/server/hono')
   })
 
+  it('shared addon emits a single common layer', () => {
+    const ids = resolveLayers(spec({ addons: ['shared'] })).map((l) => l.id)
+    expect(ids).toContain('addon/shared/_common')
+  })
+
   it('emits one ui layer per Astro UI selected', () => {
     const ids = resolveLayers(
       spec({ host: 'astro', ui: ['react', 'mdx'] }),

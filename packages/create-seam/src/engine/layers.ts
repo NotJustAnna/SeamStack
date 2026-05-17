@@ -45,6 +45,8 @@ export function resolveLayers(spec: ProjectSpec): LayerRef[] {
       layers.push({ id: 'addon/graphql/_common', slot: SLOT.addon })
       layers.push({ id: `addon/graphql/client/${spec.host}`, slot: SLOT.addon })
       layers.push({ id: `addon/graphql/server/${spec.backend}`, slot: SLOT.addon })
+    } else if (a === 'shared') {
+      layers.push({ id: 'addon/shared/_common', slot: SLOT.addon })
     }
   }
 

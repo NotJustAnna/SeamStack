@@ -45,10 +45,12 @@ export const ADDON_LABEL: Record<Addon, string> = {
   tailwind: 'Tailwind CSS v4',
   trpc: 'tRPC starter',
   graphql: 'GraphQL starter',
+  shared: 'Shared folder',
 }
 
 export const ADDON_HINT: Record<Addon, string> = {
   tailwind: 'utility-first CSS, framework-aware install',
   trpc: 'end-to-end typesafe API, router + typed client',
   graphql: 'GraphQL endpoint with idiomatic backend plugin',
+  shared: 'shared/ folder with types and utilities usable by both client and server',
 }

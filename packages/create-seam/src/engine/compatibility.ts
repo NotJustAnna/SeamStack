@@ -89,6 +89,9 @@ function validateAddons(spec: ProjectSpec): CompatError[] {
     seen.add(a)
   }
   if (spec.addons.includes('trpc')) errs.push(...checkTrpc(spec))
+  if (spec.addons.includes('shared') && spec.host === 'angular') {
+    errs.push({ field: 'addons', message: 'The shared/ addon is not supported for Angular projects.' })
+  }
   return errs
 }
 

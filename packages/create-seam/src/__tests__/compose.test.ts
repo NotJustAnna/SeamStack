@@ -63,7 +63,10 @@ describe('composeProject — vite + react + ts + hono', () => {
     expect(existsSync(join(target, 'package.json'))).toBe(true)
     expect(existsSync(join(target, 'vite.config.ts'))).toBe(true)
     expect(existsSync(join(target, 'seam.config.ts'))).toBe(true)
+    expect(existsSync(join(target, 'tsconfig.base.json'))).toBe(true)
     expect(existsSync(join(target, 'tsconfig.json'))).toBe(true)
+    expect(existsSync(join(target, 'client/tsconfig.json'))).toBe(true)
+    expect(existsSync(join(target, 'server/tsconfig.json'))).toBe(true)
     expect(existsSync(join(target, 'client/main.tsx'))).toBe(true)
     expect(existsSync(join(target, 'client/index.html'))).toBe(true)
     expect(existsSync(join(target, 'server/index.ts'))).toBe(true)
@@ -362,6 +365,36 @@ describe('composeProject — angular + nestjs + tailwind + graphql', () => {
   })
 })
 
+describe('composeProject — vite + react + ts + hono + shared', () => {
+  it('creates shared/index.ts and includes it in all tsconfigs', async () => {
+    const target = await compose({
+      name: 'demo-shared',
+      host: 'vite',
+      ui: 'react',
+      variant: 'ts',
+      backend: 'hono',
+      addons: ['shared'],
+    })
+
+    expect(existsSync(join(target, 'shared/index.ts'))).toBe(true)
+
+    const root = JSON.parse(await fs.readFile(join(target, 'tsconfig.json'), 'utf8')) as {
+      include: string[]
+    }
+    expect(root.include).toContain('shared/**/*.ts')
+
+    const client = JSON.parse(
+      await fs.readFile(join(target, 'client/tsconfig.json'), 'utf8'),
+    ) as { include: string[] }
+    expect(client.include).toContain('../shared/**/*.ts')
+
+    const server = JSON.parse(
+      await fs.readFile(join(target, 'server/tsconfig.json'), 'utf8'),
+    ) as { include: string[] }
+    expect(server.include).toContain('../shared/**/*.ts')
+  })
+})
+
 describe('composeProject — invalid spec', () => {
   it('rejects vite without ui', async () => {
     await expect(
@@ -385,6 +418,19 @@ describe('composeProject — invalid spec', () => {
         variant: 'ts',
         backend: 'hono',
         addons: ['trpc'],
+      }),
+    ).rejects.toThrow(/Invalid project spec/)
+  })
+
+  it('rejects shared addon on angular', async () => {
+    await expect(
+      compose({
+        name: 'bad',
+        host: 'angular',
+        ui: null,
+        variant: 'ts',
+        backend: 'nestjs',
+        addons: ['shared'],
       }),
     ).rejects.toThrow(/Invalid project spec/)
   })

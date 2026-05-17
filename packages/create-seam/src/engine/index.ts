@@ -123,9 +123,13 @@ export async function composeProject(
   const seam = renderSeamConfig(seamFragments, spec.variant)
   await fs.writeFile(join(targetDir, seam.filename), seam.source, 'utf8')
 
-  const ts = renderTsconfig(spec.host)
-  if (spec.variant === 'ts' && ts) {
-    await fs.writeFile(join(targetDir, ts.filename), ts.source, 'utf8')
+  if (spec.variant === 'ts') {
+    const tsconfigs = renderTsconfig(spec.host, spec.addons)
+    for (const tc of tsconfigs) {
+      const dest = join(targetDir, tc.filename)
+      await fs.mkdir(dirname(dest), { recursive: true })
+      await fs.writeFile(dest, tc.source, 'utf8')
+    }
   }
 
   const pkgPath = join(targetDir, 'package.json')
