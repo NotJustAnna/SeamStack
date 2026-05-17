@@ -7,6 +7,7 @@ import {
   type DevHandle,
   type BuildContext,
   type BuildOutput,
+  type WatchHandle,
   type StartContext,
   type StartHandle,
 } from '@seamstack/core'
@@ -150,6 +151,25 @@ export default function vite(opts: ViteAdapterOptions = {}): Serveable {
       return {
         assetsDir: outDir,
         indexHtml: join(outDir, 'index.html'),
+      }
+    },
+    async watch(ctx: BuildContext): Promise<WatchHandle> {
+      const { build } = await import('vite')
+      const root = resolveRoot(ctx.cwd)
+      const outDir = join(ctx.outDir, 'client')
+      const configFile = findViteConfig(ctx.cwd) ?? findViteConfig(root)
+
+      const watcher = (await build({
+        root,
+        configFile,
+        build: { outDir, emptyOutDir: false, watch: {} },
+        logLevel: 'info',
+      })) as { close(): Promise<void> }
+
+      return {
+        async stop() {
+          await watcher.close()
+        },
       }
     },
     async start(_ctx: StartContext): Promise<StartHandle> {
