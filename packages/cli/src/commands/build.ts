@@ -6,22 +6,31 @@ import { log } from '../logger.js'
 import type {
   BuildContext,
   BuildOutput,
+  WatchHandle,
   PluginBuildContext,
 } from '@seamstack/core'
 
 export interface BuildOptions {
   readonly cwd: string
+  readonly config?: string
   readonly host?: string
+  readonly port?: number
+  readonly frontendPort?: number
+  readonly backendPort?: number
+  readonly watch?: boolean
 }
 
 export async function runBuild(opts: BuildOptions): Promise<void> {
   const totalStart = Date.now()
-  const { config, configPath } = await loadConfig(opts.cwd)
+  const { config, configPath } = await loadConfig(opts.cwd, opts.config)
   const projectRoot = dirname(configPath)
   const topology = await resolveWeave({
     weave: config,
     mode: 'prod',
-    ...(opts.host ? { host: opts.host } : {}),
+    host: opts.host,
+    port: opts.port,
+    frontendPort: opts.frontendPort,
+    backendPort: opts.backendPort,
   })
 
   const outDir = resolve(projectRoot, 'dist')
@@ -73,4 +82,43 @@ export async function runBuild(opts: BuildOptions): Promise<void> {
   }
 
   log.success(`build complete in ${Date.now() - totalStart}ms`)
+
+  if (!opts.watch) return
+
+  log.info('watching for changes…')
+
+  const watchHandles: WatchHandle[] = []
+
+  let stopping = false
+  const cleanup = async () => {
+    if (stopping) return
+    stopping = true
+    for (const h of watchHandles) {
+      try {
+        await h.stop()
+      } catch {
+        /* ignore */
+      }
+    }
+    process.exit(0)
+  }
+  process.on('SIGINT', () => void cleanup())
+  process.on('SIGTERM', () => void cleanup())
+
+  for (const service of order) {
+    if (!service.instance.watch) continue
+    const ctx: BuildContext = {
+      mode: 'prod',
+      cwd: projectRoot,
+      publicHost: topology.publicHost,
+      publicPort: topology.publicPort,
+      publicUrl: topology.publicUrl,
+      outDir,
+      peerOutputs: { ...peerOutputs },
+    }
+    const handle = await service.instance.watch(ctx)
+    watchHandles.push(handle)
+  }
+
+  await new Promise<void>(() => {})
 }

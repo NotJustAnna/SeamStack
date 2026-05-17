@@ -4,9 +4,13 @@ import { formatPlan, type Phase } from '../plan-format.js'
 
 export interface PlanOptions {
   readonly cwd: string
+  readonly config?: string
   readonly phase?: string
   readonly json?: boolean
   readonly host?: string
+  readonly port?: number
+  readonly frontendPort?: number
+  readonly backendPort?: number
 }
 
 const PHASES: readonly Phase[] = ['dev', 'build', 'start']
@@ -17,14 +21,17 @@ function asPhase(s: string | undefined): Phase | undefined {
 }
 
 export async function runPlan(opts: PlanOptions): Promise<void> {
-  const { config } = await loadConfig(opts.cwd)
+  const { config } = await loadConfig(opts.cwd, opts.config)
   const phase = asPhase(opts.phase)
   // Use 'dev' mode for resolution when explaining dev specifically; otherwise 'prod'
   const mode = phase === 'dev' ? 'dev' : 'prod'
   const topology = await resolveWeave({
     weave: config,
     mode,
-    ...(opts.host ? { host: opts.host } : {}),
+    host: opts.host,
+    port: opts.port,
+    frontendPort: opts.frontendPort,
+    backendPort: opts.backendPort,
   })
 
   if (opts.json) {

@@ -12,17 +12,28 @@ import type {
 
 export interface DevOptions {
   readonly cwd: string
+  readonly config?: string
   readonly host?: string
+  readonly port?: number
+  readonly frontendPort?: number
+  readonly backendPort?: number
+  readonly frontendStrictPort?: boolean
+  readonly backendStrictPort?: boolean
 }
 
 export async function runDev(opts: DevOptions): Promise<void> {
   const start = Date.now()
-  const { config, configPath } = await loadConfig(opts.cwd)
+  const { config, configPath } = await loadConfig(opts.cwd, opts.config)
   const projectRoot = dirname(configPath)
   const topology = await resolveWeave({
     weave: config,
     mode: 'dev',
-    ...(opts.host ? { host: opts.host } : {}),
+    host: opts.host,
+    port: opts.port,
+    frontendPort: opts.frontendPort,
+    backendPort: opts.backendPort,
+    frontendStrictPort: opts.frontendStrictPort,
+    backendStrictPort: opts.backendStrictPort,
   })
 
   const outDir = resolve(projectRoot, 'dist')

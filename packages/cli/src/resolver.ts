@@ -49,10 +49,28 @@ async function getFreePort(): Promise<number> {
   })
 }
 
+function isPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const srv = createServer()
+    srv.once('error', (err: NodeJS.ErrnoException) => {
+      resolve(err.code === 'EADDRINUSE')
+    })
+    srv.once('listening', () => {
+      srv.close(() => resolve(false))
+    })
+    srv.listen(port, '127.0.0.1')
+  })
+}
+
 export interface ResolverInput {
   readonly weave: WeaveInput
   readonly mode: SeamMode
   readonly host?: string
+  readonly port?: number
+  readonly frontendPort?: number
+  readonly backendPort?: number
+  readonly frontendStrictPort?: boolean
+  readonly backendStrictPort?: boolean
 }
 
 export async function resolveWeave(input: ResolverInput): Promise<ResolvedTopology> {
@@ -138,9 +156,17 @@ export async function resolveWeave(input: ResolverInput): Promise<ResolvedTopolo
     )
   }
 
-  const publicPort = weave.port ?? (Number(process.env['PORT']) || 3000)
-  const sourceDevPort = publicPort
-  const hostDevPort = await getFreePort()
+  const publicPort = input.port ?? weave.port ?? (Number(process.env['PORT']) || 3000)
+  const sourceDevPort = input.frontendPort ?? publicPort
+  const hostDevPort = input.backendPort ?? await getFreePort()
+  const hostProdPort = input.backendPort ?? publicPort
+
+  if (input.frontendStrictPort && await isPortInUse(sourceDevPort)) {
+    throw new Error(`[seam] --frontend-strict-port: port ${sourceDevPort} is already in use.`)
+  }
+  if (input.backendStrictPort && await isPortInUse(hostDevPort)) {
+    throw new Error(`[seam] --backend-strict-port: port ${hostDevPort} is already in use.`)
+  }
 
   const resolvedSource: ResolvedService = {
     instance: source,
@@ -158,7 +184,7 @@ export async function resolveWeave(input: ResolverInput): Promise<ResolvedTopolo
     mountPath: hostRoutes[0]!,
     routes: hostRoutes,
     devPort: hostDevPort,
-    prodPort: publicPort,
+    prodPort: hostProdPort,
   }
 
   const routing: Record<string, string> = {
