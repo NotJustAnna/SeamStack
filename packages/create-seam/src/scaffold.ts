@@ -6,7 +6,7 @@ import pc from 'picocolors'
 import { composeProject } from './engine/index.js'
 import type { ProjectSpec } from './engine/spec.js'
 
-export type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun'
+export type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun' | 'nub'
 
 export interface ScaffoldInput {
   spec: ProjectSpec
@@ -90,6 +90,7 @@ export function detectPackageManager(): PackageManager {
   if (ua.startsWith('pnpm')) return 'pnpm'
   if (ua.startsWith('yarn')) return 'yarn'
   if (ua.startsWith('bun')) return 'bun'
+  if (ua.startsWith('nub')) return 'nub'
   if (ua.startsWith('npm')) return 'npm'
   return 'pnpm'
 }

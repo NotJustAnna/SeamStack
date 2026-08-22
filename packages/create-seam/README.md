@@ -20,7 +20,7 @@ create-seam [name]
   --backend  <hono|express|fastify|elysia|nestjs>
   --variant  <js|ts>                          # only meaningful for non-Angular, non-NestJS pairs
   --addons   <names>                          # comma-separated: tailwind|trpc|graphql
-  --pm       <pnpm|npm|yarn|bun>
+  --pm       <pnpm|npm|yarn|bun|nub>
   --no-install                                # skip dependency install
   --no-git                                    # skip `git init`
   --force                                     # overwrite a non-empty target

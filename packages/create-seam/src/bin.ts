@@ -24,7 +24,7 @@ import {
   type Variant,
 } from './engine/spec.js'
 
-const PMS = ['pnpm', 'npm', 'yarn', 'bun'] as const
+const PMS = ['pnpm', 'npm', 'yarn', 'bun', 'nub'] as const
 
 interface CliFlags {
   /** New: replaces --frontend. */
@@ -166,7 +166,7 @@ function parseAddons(value: string | undefined): Addon[] {
 function buildOutro(opts: { name: string; pm: PackageManager; install: boolean }): string {
   const lines = [pc.green('All seamed up!'), '', pc.dim('Next:'), `  cd ${opts.name}`]
   if (!opts.install) lines.push(`  ${opts.pm} install`)
-  const devCmd = opts.pm === 'npm' ? 'npm run dev' : `${opts.pm} dev`
+  const devCmd = opts.pm === 'npm' || opts.pm === 'nub' ? `${opts.pm} run dev` : `${opts.pm} dev`
   lines.push(`  ${devCmd}`)
   return lines.join('\n')
 }
