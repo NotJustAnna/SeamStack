@@ -13,14 +13,23 @@
       "default": "./dist/adapter.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "angular", "ssr", "adapter", "frontend"],
+  "keywords": [
+    "seamstack",
+    "angular",
+    "ssr",
+    "adapter",
+    "frontend"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",

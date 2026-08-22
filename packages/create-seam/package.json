@@ -15,7 +15,10 @@
   "bin": {
     "create-seam": "./dist/bin.js"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup && tsx scripts/build-templates.ts",
     "build:layers": "tsx scripts/build-templates.ts",
@@ -24,7 +27,13 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "scaffold", "create", "starter", "template"],
+  "keywords": [
+    "seamstack",
+    "scaffold",
+    "create",
+    "starter",
+    "template"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
@@ -40,13 +49,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@clack/prompts": "^1.2.0",
+    "@clack/prompts": "^1.7.0",
     "cac": "^7.0.0",
     "handlebars": "^4.7.9",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "tsx": "^4.19.2"
+    "@types/node": "^25.9.5",
+    "tsx": "^4.23.12"
   }
 }

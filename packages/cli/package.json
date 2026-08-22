@@ -15,14 +15,23 @@
   "bin": {
     "seam": "./dist/bin.js"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "cli", "seam", "ssr", "dev-server"],
+  "keywords": [
+    "seamstack",
+    "cli",
+    "seam",
+    "ssr",
+    "dev-server"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
@@ -41,12 +50,12 @@
     "@seamstack/core": "workspace:*",
     "bundle-require": "^5.1.0",
     "cac": "^7.0.0",
-    "esbuild": "^0.28.0",
-    "ink": "^7.0.1",
+    "esbuild": "^0.28.2",
+    "ink": "^7.1.1",
     "picocolors": "^1.1.1",
-    "react": "^19.2.5"
+    "react": "^19.2.8"
   },
   "devDependencies": {
-    "@types/react": "^19.2.14"
+    "@types/react": "^19.2.18"
   }
 }

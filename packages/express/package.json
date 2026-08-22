@@ -13,14 +13,23 @@
       "default": "./dist/adapter.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "express", "backend", "adapter", "ssr"],
+  "keywords": [
+    "seamstack",
+    "express",
+    "backend",
+    "adapter",
+    "ssr"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
@@ -43,10 +52,10 @@
     "express": "^4 || ^5"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.6",
     "@types/serve-static": "^2.2.0",
-    "@types/supertest": "^7.2.0",
-    "express": "^5.0.0",
-    "supertest": "^7.0.0"
+    "@types/supertest": "^7.2.1",
+    "express": "^5.2.1",
+    "supertest": "^7.2.2"
   }
 }

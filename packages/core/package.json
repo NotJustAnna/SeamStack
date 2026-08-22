@@ -12,14 +12,23 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "ssr", "adapter", "host", "framework"],
+  "keywords": [
+    "seamstack",
+    "ssr",
+    "adapter",
+    "host",
+    "framework"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
@@ -35,7 +44,7 @@
     "access": "public"
   },
   "dependencies": {
-    "esbuild": "^0.28.0",
-    "execa": "^9.5.1"
+    "esbuild": "^0.28.2",
+    "execa": "^9.6.1"
   }
 }

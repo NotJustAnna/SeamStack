@@ -13,14 +13,23 @@
       "default": "./dist/adapter.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["seamstack", "elysia", "backend", "adapter", "ssr"],
+  "keywords": [
+    "seamstack",
+    "elysia",
+    "backend",
+    "adapter",
+    "ssr"
+  ],
   "author": "Anna Silva <npm@notjustanna.net>",
   "license": "MIT",
   "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
@@ -36,13 +45,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@elysiajs/static": "^1.2.0",
+    "@elysiajs/static": "^1.4.10",
     "@seamstack/core": "workspace:*"
   },
   "peerDependencies": {
     "elysia": "^1.2"
   },
   "devDependencies": {
-    "elysia": "^1.2.0"
+    "elysia": "^1.4.29"
   }
 }
