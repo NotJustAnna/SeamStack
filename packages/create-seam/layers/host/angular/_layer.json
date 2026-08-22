@@ -19,6 +19,7 @@
     "tsx": "^4.21.0",
     "typescript": "~6.0.3"
   },
+  "onlyBuiltDeps": ["esbuild"],
   "seamConfig": {
     "imports": ["import angular from '@seamstack/angular/adapter'"],
     "fabric": ["angular()"]

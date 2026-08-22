@@ -133,7 +133,7 @@ export async function composeProject(
   }
 
   const pkgPath = join(targetDir, 'package.json')
-  await mergeIntoPackageJson(
+  const { onlyBuiltDependencies } = await mergeIntoPackageJson(
     pkgPath,
     [
       // Seed name first so it lands in the canonical position; the final
@@ -143,6 +143,7 @@ export async function composeProject(
         deps: manifest.deps,
         devDeps: manifest.devDeps,
         peerDeps: manifest.peerDeps,
+        onlyBuiltDeps: manifest.onlyBuiltDeps,
         scripts: manifest.scripts,
         pkgOverrides: manifest.pkgOverrides,
         origin: ref.id,
@@ -151,6 +152,10 @@ export async function composeProject(
     ],
     { warn: opts.warn },
   )
+
+  if (onlyBuiltDependencies.length) {
+    await writePnpmWorkspaceYaml(targetDir, onlyBuiltDependencies)
+  }
 
   await ensureGitignore(targetDir)
 
@@ -161,4 +166,24 @@ async function ensureGitignore(dir: string): Promise<void> {
   const file = join(dir, '.gitignore')
   if (existsSync(file)) return
   await fs.writeFile(file, ['node_modules', 'dist', '.DS_Store', ''].join('\n'), 'utf8')
+}
+
+/**
+ * pnpm (v10+) reads its build-script allowlist from `pnpm-workspace.yaml`, not
+ * from `package.json`'s `pnpm` field — even for a single-package project. Without
+ * this, tools like esbuild/vite that ship a postinstall script get their build
+ * silently blocked and `pnpm install` exits non-zero. The config key itself moved
+ * again between pnpm 10 (`onlyBuiltDependencies`, an array) and pnpm 11
+ * (`allowBuilds`, a map) — write both so either version is satisfied.
+ */
+async function writePnpmWorkspaceYaml(dir: string, onlyBuiltDependencies: string[]): Promise<void> {
+  const file = join(dir, 'pnpm-workspace.yaml')
+  const lines = [
+    'onlyBuiltDependencies:',
+    ...onlyBuiltDependencies.map((name) => `  - ${name}`),
+    'allowBuilds:',
+    ...onlyBuiltDependencies.map((name) => `  ${name}: true`),
+    '',
+  ]
+  await fs.writeFile(file, lines.join('\n'), 'utf8')
 }

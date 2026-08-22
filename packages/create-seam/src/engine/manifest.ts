@@ -48,6 +48,8 @@ export interface LayerManifest {
   scripts?: Record<string, string>
   /** Merged into root `package.json` `peerDependencies`. */
   peerDeps?: Record<string, string>
+  /** Union-deduped into root `package.json` `pnpm.onlyBuiltDependencies`. */
+  onlyBuiltDeps?: string[]
   /** Top-level package.json scalar overrides (e.g. `type`). Later layers win. */
   pkgOverrides?: Record<string, unknown>
   /** Contribution to the generated `vite.config.{ts,js}` (only effective on vite host). */

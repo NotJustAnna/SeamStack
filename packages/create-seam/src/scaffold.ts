@@ -17,7 +17,12 @@ export interface ScaffoldInput {
   force: boolean
 }
 
-export async function scaffold(input: ScaffoldInput): Promise<void> {
+export interface ScaffoldResult {
+  installFailed: boolean
+}
+
+export async function scaffold(input: ScaffoldInput): Promise<ScaffoldResult> {
+  let installFailed = false
   const writeSpin = p.spinner()
   writeSpin.start(`Tailoring ${pc.cyan(input.spec.name)}`)
   await fs.mkdir(input.targetDir, { recursive: true })
@@ -52,27 +57,33 @@ export async function scaffold(input: ScaffoldInput): Promise<void> {
       await runIn(input.targetDir, input.pm, ['install'])
       installSpin.stop('Dependencies installed')
     } catch (err) {
+      installFailed = true
       installSpin.stop(pc.yellow(`Install failed: ${(err as Error).message}`))
     }
   }
+
+  return { installFailed }
 }
 
 function runIn(cwd: string, cmd: string, args: string[]): Promise<void> {
   return new Promise((res, rej) => {
     const child = spawn(cmd, args, {
       cwd,
-      stdio: ['ignore', 'ignore', 'pipe'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       shell: process.platform === 'win32',
     })
-    let stderr = ''
+    let output = ''
+    child.stdout?.on('data', (d) => {
+      output += d.toString()
+    })
     child.stderr?.on('data', (d) => {
-      stderr += d.toString()
+      output += d.toString()
     })
     child.once('error', rej)
     child.once('close', (code) => {
       if (code === 0) res()
       else {
-        const detail = stderr.trim().split('\n')[0]
+        const detail = output.trim().split('\n').filter(Boolean).pop()
         rej(
           new Error(
             detail

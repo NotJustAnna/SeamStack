@@ -131,8 +131,8 @@ async function runCli(rawName: string | undefined, flags: CliFlags): Promise<voi
     force = r.force
   }
 
-  await scaffold({ spec, targetDir, install, git, pm, force })
-  p.outro(buildOutro({ name: spec.name, pm, install }))
+  const result = await scaffold({ spec, targetDir, install, git, pm, force })
+  p.outro(buildOutro({ name: spec.name, pm, install, installFailed: result.installFailed }))
 }
 
 function defaultUiFor(
@@ -163,9 +163,15 @@ function parseAddons(value: string | undefined): Addon[] {
   return parts as Addon[]
 }
 
-function buildOutro(opts: { name: string; pm: PackageManager; install: boolean }): string {
-  const lines = [pc.green('All seamed up!'), '', pc.dim('Next:'), `  cd ${opts.name}`]
-  if (!opts.install) lines.push(`  ${opts.pm} install`)
+function buildOutro(opts: {
+  name: string
+  pm: PackageManager
+  install: boolean
+  installFailed: boolean
+}): string {
+  const title = opts.installFailed ? pc.yellow('Seamed up, but install failed') : pc.green('All seamed up!')
+  const lines = [title, '', pc.dim('Next:'), `  cd ${opts.name}`]
+  if (!opts.install || opts.installFailed) lines.push(`  ${opts.pm} install`)
   const devCmd = opts.pm === 'npm' || opts.pm === 'nub' ? `${opts.pm} run dev` : `${opts.pm} dev`
   lines.push(`  ${devCmd}`)
   return lines.join('\n')

@@ -10,6 +10,7 @@ export interface PackageJson {
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>
   peerDependencies?: Record<string, string>
+  allowScripts?: Record<string, boolean>
   [k: string]: unknown
 }
 
@@ -35,12 +36,13 @@ export async function mergeIntoPackageJson(
     deps?: Record<string, string>
     devDeps?: Record<string, string>
     peerDeps?: Record<string, string>
+    onlyBuiltDeps?: string[]
     scripts?: Record<string, string>
     pkgOverrides?: Record<string, unknown>
     origin: string
   }>,
   opts: DepMergeOptions = {},
-): Promise<void> {
+): Promise<{ onlyBuiltDependencies: string[] }> {
   const pkg = existsSync(pkgPath)
     ? (JSON.parse(await fs.readFile(pkgPath, 'utf8')) as PackageJson)
     : {}
@@ -49,11 +51,13 @@ export async function mergeIntoPackageJson(
   const devDependencies = pkg.devDependencies ?? {}
   const peerDependencies = pkg.peerDependencies ?? {}
   const scripts = pkg.scripts ?? {}
+  const onlyBuiltDependencies = new Set(Object.keys(pkg.allowScripts ?? {}))
 
   for (const patch of patches) {
     mergeDeps(dependencies, patch.deps, patch.origin, opts.warn)
     mergeDeps(devDependencies, patch.devDeps, patch.origin, opts.warn)
     mergeDeps(peerDependencies, patch.peerDeps, patch.origin, opts.warn)
+    for (const name of patch.onlyBuiltDeps ?? []) onlyBuiltDependencies.add(name)
     if (patch.scripts) {
       for (const [k, v] of Object.entries(patch.scripts)) scripts[k] = v
     }
@@ -69,8 +73,17 @@ export async function mergeIntoPackageJson(
   if (Object.keys(devDependencies).length) pkg.devDependencies = sortObject(devDependencies)
   if (Object.keys(peerDependencies).length) pkg.peerDependencies = sortObject(peerDependencies)
   if (Object.keys(scripts).length) pkg.scripts = scripts
+  if (onlyBuiltDependencies.size) {
+    // npm (12+) reads its own build-script allowlist straight from package.json,
+    // unlike pnpm which requires pnpm-workspace.yaml — see writePnpmWorkspaceYaml.
+    pkg.allowScripts = sortObject(
+      Object.fromEntries([...onlyBuiltDependencies].map((name) => [name, true])),
+    )
+  }
 
   await fs.writeFile(pkgPath, JSON.stringify(orderPackageJson(pkg), null, 2) + '\n', 'utf8')
+
+  return { onlyBuiltDependencies: [...onlyBuiltDependencies].sort() }
 }
 
 const PKG_FIELD_ORDER = [
@@ -90,6 +103,7 @@ const PKG_FIELD_ORDER = [
   'devDependencies',
   'peerDependencies',
   'optionalDependencies',
+  'allowScripts',
   'engines',
   'keywords',
   'author',
