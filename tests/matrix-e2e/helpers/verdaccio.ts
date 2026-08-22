@@ -1,6 +1,6 @@
-import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdtempSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import getPort, { portNumbers } from 'get-port'
 import { execa } from 'execa'
 import { createRequire } from 'node:module'
@@ -79,7 +79,13 @@ export async function startVerdaccio(): Promise<VerdaccioInstance> {
   const configPath = join(configDir, 'config.yaml')
   writeFileSync(configPath, configYaml(storageDir, htpasswdPath, port), 'utf8')
 
-  const verdaccioBin = require.resolve('verdaccio/build/lib/cli.js')
+  // Resolve via the package's declared `bin` entry rather than reaching into its
+  // internal build output — verdaccio 6.10 dropped `./build/lib/cli.js` from its
+  // `exports` map, breaking a hardcoded require.resolve() of that path.
+  const verdaccioPkgPath = require.resolve('verdaccio/package.json')
+  const verdaccioPkg = JSON.parse(readFileSync(verdaccioPkgPath, 'utf8')) as { bin: string | Record<string, string> }
+  const binRelPath = typeof verdaccioPkg.bin === 'string' ? verdaccioPkg.bin : Object.values(verdaccioPkg.bin)[0]
+  const verdaccioBin = join(dirname(verdaccioPkgPath), binRelPath)
   const proc = execa('node', [verdaccioBin, '--config', configPath], {
     reject: false,
     detached: true,
