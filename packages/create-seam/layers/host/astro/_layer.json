@@ -6,12 +6,17 @@
   },
   "devDeps": {
     "@seamstack/cli": "workspace:*",
-    "@seamstack/astro": "workspace:*",
+    "@seamstack/astro": "workspace:*"
+  },
+  "devDepsTs": {
     "tsx": "^4.21.0"
   },
   "onlyBuiltDeps": ["esbuild"],
-  "scripts": {
+  "scriptsTs": {
     "typecheck": "astro check && tsc -p server/tsconfig.json"
+  },
+  "scriptsJs": {
+    "typecheck": "astro check"
   },
   "seamConfig": {
     "imports": ["import astro from '@seamstack/astro/adapter'"],

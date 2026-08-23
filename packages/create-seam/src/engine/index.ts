@@ -147,7 +147,10 @@ export async function composeProject(
         },
         peerDeps: manifest.peerDeps,
         onlyBuiltDeps: manifest.onlyBuiltDeps,
-        scripts: manifest.scripts,
+        scripts: {
+          ...manifest.scripts,
+          ...(spec.variant === 'ts' ? manifest.scriptsTs : manifest.scriptsJs),
+        },
         pkgOverrides: manifest.pkgOverrides,
         origin: ref.id,
       })),

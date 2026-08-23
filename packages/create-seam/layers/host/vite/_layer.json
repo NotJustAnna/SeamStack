@@ -4,11 +4,13 @@
   "devDeps": {
     "@seamstack/cli": "workspace:*",
     "@seamstack/vite": "workspace:*",
-    "tsx": "^4.21.0",
     "vite": "^8.2.2"
   },
+  "devDepsTs": {
+    "tsx": "^4.21.0"
+  },
   "onlyBuiltDeps": ["esbuild"],
-  "scripts": {
+  "scriptsTs": {
     "typecheck": "tsc -p client/tsconfig.json && tsc -p server/tsconfig.json"
   },
   "seamConfig": {

@@ -50,6 +50,10 @@ export interface LayerManifest {
   devDepsJs?: Record<string, string>
   /** Merged into root `package.json` `scripts`. Later layers win. */
   scripts?: Record<string, string>
+  /** Merged into `scripts`, but only when `variant === 'ts'` (e.g. a tsconfig-dependent typecheck script). */
+  scriptsTs?: Record<string, string>
+  /** Merged into `scripts`, but only when `variant === 'js'`. */
+  scriptsJs?: Record<string, string>
   /** Merged into root `package.json` `peerDependencies`. */
   peerDeps?: Record<string, string>
   /** Union-deduped into root `package.json` `pnpm.onlyBuiltDependencies`. */
