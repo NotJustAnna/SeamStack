@@ -48,10 +48,10 @@
     "@seamstack/core": "workspace:*"
   },
   "peerDependencies": {
-    "astro": "^5 || ^6"
+    "astro": "^5 || ^6 || ^7"
   },
   "devDependencies": {
-    "astro": "^6.1.8",
+    "astro": "^7.2.4",
     "typescript": "^6.0.3"
   }
 }

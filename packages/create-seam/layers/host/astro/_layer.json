@@ -2,7 +2,7 @@
   "name": "host:astro",
   "description": "Astro host: astro.config integrations list + seam adapter.",
   "deps": {
-    "astro": "^6.1.8"
+    "astro": "^7.2.4"
   },
   "devDeps": {
     "@seamstack/cli": "workspace:*",

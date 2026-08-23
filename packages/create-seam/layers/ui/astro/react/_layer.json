@@ -2,7 +2,7 @@
   "name": "ui:astro/react",
   "description": "React integration for Astro.",
   "deps": {
-    "@astrojs/react": "^5.0.3",
+    "@astrojs/react": "^6.0.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

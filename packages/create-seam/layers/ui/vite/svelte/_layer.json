@@ -5,7 +5,7 @@
     "svelte": "^5.44.1"
   },
   "devDeps": {
-    "@sveltejs/vite-plugin-svelte": "^6.2.4"
+    "@sveltejs/vite-plugin-svelte": "^7.3.0"
   },
   "viteConfig": {
     "imports": ["import { svelte } from '@sveltejs/vite-plugin-svelte'"],

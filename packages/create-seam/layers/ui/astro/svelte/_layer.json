@@ -2,7 +2,7 @@
   "name": "ui:astro/svelte",
   "description": "Svelte integration for Astro.",
   "deps": {
-    "@astrojs/svelte": "^8.0.4",
+    "@astrojs/svelte": "^9.0.1",
     "svelte": "^5.44.1"
   },
   "astroConfig": {

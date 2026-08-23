@@ -2,7 +2,7 @@
   "name": "ui:astro/vue",
   "description": "Vue integration for Astro.",
   "deps": {
-    "@astrojs/vue": "^6.0.0",
+    "@astrojs/vue": "^7.0.2",
     "vue": "^3.5.25"
   },
   "astroConfig": {
