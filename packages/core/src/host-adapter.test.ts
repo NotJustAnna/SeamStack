@@ -451,9 +451,27 @@ describe('createHostServeable', () => {
         expect(execaCalls).toEqual([{ bin: 'tsx', args: ['watch', join(dir, 'server.ts')], cwd: dir }])
       })
 
-      it('ambient detection never overrides the compiled start() default (stays node)', async () => {
+      it('ambient bun/deno also becomes the compiled start() default (real engines, not just node)', async () => {
         const dir = await mkdtemp(join(tmpdir(), 'seam-host-start-'))
         process.env[UA_KEY] = 'bun/1.2.3'
+        const adapter = createHostServeable({
+          framework: 'test',
+          defaultMountPath: '/api',
+          entry: './server.ts',
+          writeWireEnv: () => ({}),
+          buildTool: fakeCompilingTool(),
+        })
+        await adapter.build(makeBuildCtx(dir))
+        const handle = await adapter.start(makeStartCtx(dir))
+        await handle.stop()
+        expect(execaCalls).toEqual([
+          { bin: 'bun', args: ['run', join(dir, 'server', 'index.js')], cwd: dir },
+        ])
+      })
+
+      it('ambient nub does not override the compiled start() default — it is just node underneath', async () => {
+        const dir = await mkdtemp(join(tmpdir(), 'seam-host-start-'))
+        process.env[UA_KEY] = 'nub/0.1.0'
         const adapter = createHostServeable({
           framework: 'test',
           defaultMountPath: '/api',

@@ -66,7 +66,9 @@ export interface HostFrameworkOptions {
    * source with no `buildTool`, or the compiled output with one). Orthogonal
    * to `buildTool`: `runtime: 'bun'` is meaningful whether or not a
    * `buildTool` is also set. Defaults to `'tsx'` with no `buildTool`,
-   * `'node'` with one. Independent of `devRuntime` — `seam dev => nub, seam
+   * `'node'` with one (unless the ambient runtime is `bun`/`deno`, which are
+   * preferred over `node` too — both can run a compiled `.js` file
+   * natively). Independent of `devRuntime` — `seam dev => nub, seam
    * build => webpack, seam start => node` is a perfectly sane combination.
    */
   readonly runtime?: Runner
@@ -181,10 +183,8 @@ function spawnTsx(
  * Best-effort detection of the runtime that launched the `seam` process
  * itself — if a developer is already running everything through `bun`/`nub`/
  * `deno`, defaulting an uncompiled TS entry to `tsx` would be a needless
- * extra tool in the mix. Only used for the "no explicit choice" default when
- * running raw source (`seam dev`, or `seam start` with no `buildTool`) — the
- * compiled-output default stays plain `'node'` regardless (a shipped build
- * is just JS; ambient-runtime detection isn't relevant to running it).
+ * extra tool in the mix. Used for the "no explicit choice" default when
+ * running raw source (`seam dev`, or `seam start` with no `buildTool`).
  *
  * Detects Bun/Deno directly (`process.versions.bun`, the global `Deno`
  * object), and otherwise falls back to sniffing `npm_config_user_agent` —
@@ -200,6 +200,19 @@ function detectAmbientRunner(): Runner | undefined {
   if (ua.startsWith('nub')) return 'nub'
   if (ua.startsWith('deno')) return 'deno'
   return undefined
+}
+
+/**
+ * Default runner for a *compiled* entry (a `buildTool` was set): plain
+ * `'node'`, unless the ambient runtime is `bun` or `deno` — both are their
+ * own engines capable of running a bundled/compiled `.js` file natively, so
+ * prefer them over `node` the same way the uncompiled path prefers them
+ * over `tsx`. `nub` doesn't count here: it's a package-manager alias, not a
+ * distinct engine — the process underneath is still plain Node.
+ */
+function defaultCompiledRunner(): Runner {
+  const ambient = detectAmbientRunner()
+  return ambient === 'bun' || ambient === 'deno' ? ambient : 'node'
 }
 
 /**
@@ -462,7 +475,14 @@ export function createHostServeable(opts: HostAdapterOptions): Serveable {
             `[@seamstack/${opts.framework}] No compiled server entry found — run \`seam build\` first.`,
           )
         }
-        child = spawnRunner(opts.runtime ?? 'node', compiledEntry, env, ctx.cwd, undefined, opts.framework)
+        child = spawnRunner(
+          opts.runtime ?? defaultCompiledRunner(),
+          compiledEntry,
+          env,
+          ctx.cwd,
+          undefined,
+          opts.framework,
+        )
       } else {
         child = spawnRunner(
           opts.runtime ?? detectAmbientRunner() ?? defaultTsxRunner(ctx.cwd, opts.framework),
