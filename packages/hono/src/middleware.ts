@@ -117,7 +117,10 @@ async function loadManifest(): Promise<ProdManifest | null> {
     const manifest =
       'default' in mod && mod.default ? mod.default : (mod as ProdManifest)
     if (!manifest || !manifest.assetsDir || !manifest.indexHtml) return null
-    return manifest
+    return {
+      assetsDir: join(dir, manifest.assetsDir),
+      indexHtml: join(dir, manifest.indexHtml),
+    }
   } catch {
     return null
   }

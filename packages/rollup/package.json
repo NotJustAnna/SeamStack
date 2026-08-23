@@ -1,0 +1,53 @@
+{
+  "name": "@seamstack/rollup",
+  "version": "0.3.1",
+  "description": "Rollup build tool for SeamStack backend adapters \u2014 bundles a TS server entry to JS for production.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "seamstack",
+    "rollup",
+    "build-tool",
+    "adapter"
+  ],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/rollup"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@seamstack/core": "workspace:*",
+    "@rollup/plugin-typescript": "^12",
+    "@rollup/plugin-node-resolve": "^15"
+  },
+  "peerDependencies": {
+    "rollup": "^4"
+  },
+  "devDependencies": {
+    "rollup": "^4.62.5"
+  }
+}

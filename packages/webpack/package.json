@@ -1,0 +1,54 @@
+{
+  "name": "@seamstack/webpack",
+  "version": "0.3.1",
+  "description": "webpack build tool for SeamStack backend adapters \u2014 bundles a TS server entry to JS for production.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "seamstack",
+    "webpack",
+    "build-tool",
+    "adapter"
+  ],
+  "author": "Anna Silva <npm@notjustanna.net>",
+  "license": "MIT",
+  "homepage": "https://github.com/NotJustAnna/SeamStack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotJustAnna/SeamStack.git",
+    "directory": "packages/webpack"
+  },
+  "bugs": {
+    "url": "https://github.com/NotJustAnna/SeamStack/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@seamstack/core": "workspace:*",
+    "ts-loader": "^9"
+  },
+  "peerDependencies": {
+    "webpack": "^5",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "webpack": "^5",
+    "typescript": "^6.0.3"
+  }
+}

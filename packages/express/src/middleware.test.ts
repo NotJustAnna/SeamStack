@@ -23,7 +23,7 @@ afterEach(() => {
 async function makeManifestDir(): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), 'seam-mw-express-'))
   await writeFile(join(dir, 'index.html'), '<!doctype html><body>built</body>', 'utf8')
-  const manifest = { assetsDir: dir, indexHtml: join(dir, 'index.html') }
+  const manifest = { assetsDir: '.', indexHtml: 'index.html' }
   await writeFile(
     join(dir, '_seam_prod.js'),
     `export default ${JSON.stringify(manifest)}\n`,

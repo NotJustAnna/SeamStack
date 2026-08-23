@@ -1,33 +1,15 @@
 import {
   createHostServeable,
+  type HostFrameworkOptions,
   type Serveable,
-  type WatchSetting,
 } from '@seamstack/core'
 import { HONO_WIRE_ENV, writeHonoWire } from './wire.js'
 
-export interface HonoAdapterOptions {
-  /**
-   * Path to the Hono entry file (the one that creates the app and calls
-   * `seam(...)`), relative to the seam project root. Required.
-   */
-  readonly entry: string
-  /** Runtime to spawn under. Only `'node'` is supported today. */
-  readonly runtime?: 'node'
-  /**
-   * Dev-server watch behavior. Defaults to `true` (tsx watches `entry` and its
-   * imports). See {@link WatchSetting}.
-   */
-  readonly watch?: WatchSetting
-  /**
-   * Full list of paths your backend serves. **Overrides** the default `/api`:
-   * if set, you get exactly what you specify, so include `/api` yourself if
-   * you want it. The dev frontend proxies each entry during `seam dev`.
-   * Each entry must start with `/` and not equal `/`.
-   *
-   * @example `routes: ['/api', '/graphql']`
-   */
-  readonly routes?: readonly string[]
-}
+/**
+ * See {@link HostFrameworkOptions} for `entry`, `runtime`, `watch`, `routes`,
+ * `buildTool`, and `runner`.
+ */
+export interface HonoAdapterOptions extends HostFrameworkOptions {}
 
 /**
  * Hono asset-host adapter.
@@ -52,12 +34,9 @@ export interface HonoAdapterOptions {
  */
 export default function hono(opts: HonoAdapterOptions): Serveable {
   return createHostServeable({
+    ...opts,
     framework: 'hono',
     defaultMountPath: '/api',
-    entry: opts.entry,
-    ...(opts.runtime ? { runtime: opts.runtime } : {}),
-    ...(opts.watch !== undefined ? { watch: opts.watch } : {}),
-    ...(opts.routes ? { routes: opts.routes } : {}),
     writeWireEnv(input) {
       return {
         [HONO_WIRE_ENV]: writeHonoWire({
