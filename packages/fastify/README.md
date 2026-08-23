@@ -1,6 +1,6 @@
 # @seamstack/fastify
 
-Fastify backend adapter for SeamStack — mounts a Seam frontend as a Fastify plugin and serves built assets.
+Fastify backend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/fastify fastify

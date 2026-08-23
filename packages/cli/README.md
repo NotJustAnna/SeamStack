@@ -1,6 +1,6 @@
 # @seamstack/cli
 
-The `seam` command — dev, build, plan, and start any SeamStack project.
+The `seam` command: dev, build, plan, and start any [SeamStack](https://github.com/NotJustAnna/SeamStack) project.
 
 ```bash
 pnpm add -D @seamstack/cli
@@ -17,12 +17,12 @@ seam start  [-v|--verbose] [--host <host>]
 seam plan   [phase] [--json] [-v|--verbose] [--host <host>]
 ```
 
-- `seam dev` — Boot the dev composition: one URL, frontend hot-reloads, backend handles `/api`.
-- `seam build` — Run the frontend's build and write a manifest the backend can find.
-- `seam start` — Run the production composition. The backend serves API routes and the built frontend on the same port.
-- `seam plan [dev|build|start]` — Print the topology the seam resolved for a phase. `--json` for the machine-readable form. Useful for debugging "why is my backend on a different port than I expected."
-- `--host <host>` — Bind the public-facing server. Defaults to `localhost`. `--host 0.0.0.0` exposes to the LAN.
-- `-v, --verbose` — Show internal seam details (resolved private ports, debug events). Quiet by default.
+- `seam dev`: boot the dev composition. One URL, frontend hot-reloads, backend handles `/api`.
+- `seam build`: run the frontend's build and write a manifest the backend can find.
+- `seam start`: run the production composition. The backend serves API routes and the built frontend on the same port.
+- `seam plan [dev|build|start]`: print the topology the seam resolved for a phase. `--json` for the machine-readable form. Useful for debugging "why is my backend on a different port than I expected."
+- `--host <host>`: bind the public-facing server. Defaults to `localhost`. `--host 0.0.0.0` exposes to the LAN.
+- `-v, --verbose`: show internal seam details (resolved private ports, debug events). Quiet by default.
 
 ## `defineWeave`
 
@@ -39,7 +39,7 @@ export default defineWeave({
 })
 ```
 
-`fabric` is the array of adapters — typically one frontend (`vite`/`astro`/`angular`) and one backend (`hono`/`express`/`fastify`/`elysia`/`nestjs`), in any order. The seam wires them together. `port` is the public-facing port.
+`fabric` is the array of adapters: typically one frontend (`vite`/`astro`/`angular`) and one backend (`hono`/`express`/`fastify`/`elysia`/`nestjs`), in any order. The seam wires them together. `port` is the public-facing port.
 
 ## More
 

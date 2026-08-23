@@ -1,6 +1,6 @@
 # @seamstack/nestjs
 
-NestJS backend adapter for SeamStack — mounts a Seam frontend on a Nest application and serves built assets.
+NestJS backend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/nestjs @nestjs/common @nestjs/core @nestjs/platform-express @nestjs/serve-static
@@ -8,7 +8,7 @@ pnpm add @seamstack/nestjs @nestjs/common @nestjs/core @nestjs/platform-express 
 
 ## Usage
 
-Wire the adapter in `seam.config.ts`. Nothing to configure — the adapter reads `nest-cli.json` and drives `nest start --watch` in dev / `nest build` in prod.
+Wire the adapter in `seam.config.ts`. Nothing to configure: the adapter reads `nest-cli.json` and drives `nest start --watch` in dev / `nest build` in prod.
 
 ```ts
 import { defineWeave } from '@seamstack/cli'
@@ -21,7 +21,7 @@ export default defineWeave({
 })
 ```
 
-Add `SeamModule.forRoot()` to your root module — it serves the built SPA in prod and registers a 404 → `index.html` filter so client-side routing keeps working:
+Add `SeamModule.forRoot()` to your root module. It serves the built SPA in prod and registers a 404 → `index.html` filter so client-side routing keeps working:
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -46,7 +46,7 @@ const app = await NestFactory.create(AppModule)
 await app.listen(SeamModule.port(), SeamModule.host())
 ```
 
-`SeamModule.port()` / `SeamModule.host()` and the standalone `seamPort()` / `seamHost()` exports are equivalent — use whichever reads better at the call site.
+`SeamModule.port()` / `SeamModule.host()` and the standalone `seamPort()` / `seamHost()` exports are equivalent. Use whichever reads better at the call site.
 
 ## More
 

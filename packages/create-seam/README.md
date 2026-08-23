@@ -1,6 +1,6 @@
 # create-seam
 
-Scaffold a new SeamStack project — pair any frontend with any backend.
+Scaffold a new [SeamStack](https://github.com/NotJustAnna/SeamStack) project.
 
 ```bash
 pnpm create seam@latest                 # interactive
@@ -19,7 +19,7 @@ create-seam [name]
                                               #        (omit for vanilla Astro)
   --backend  <hono|express|fastify|elysia|nestjs>
   --variant  <js|ts>                          # only meaningful for non-Angular, non-NestJS pairs
-  --addons   <names>                          # comma-separated: tailwind|trpc|graphql
+  --addons   <names>                          # comma-separated: tailwind|trpc|graphql|shared
   --pm       <pnpm|npm|yarn|bun|nub>
   --no-install                                # skip dependency install
   --no-git                                    # skip `git init`
@@ -42,4 +42,4 @@ If you provide a name plus `--host` and `--backend`, the scaffolder runs headles
 
 - Source-of-truth templates live at `templates/<name>/` and are workspace members (so `seam dev` works in-tree for dogfooding).
 - `pnpm build` runs `tsup` + `scripts/build-templates.ts`, which copies `templates/*` to `dist/templates/*` and rewrites every `workspace:*` dep to a concrete `^x.y.z` from the matching adapter package.
-- JS variants are generated from their TS siblings by `scripts/generate-js-variants.ts` (idempotent — re-run after editing a TS template to refresh its JS variant).
+- JS variants are generated from their TS siblings by `scripts/generate-js-variants.ts` (idempotent: re-run after editing a TS template to refresh its JS variant).

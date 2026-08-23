@@ -1,6 +1,6 @@
 # @seamstack/elysia
 
-Elysia backend adapter for SeamStack — mounts a Seam frontend on an Elysia app and serves built assets.
+Elysia backend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/elysia elysia @elysiajs/node
@@ -21,7 +21,7 @@ export default defineWeave({
 })
 ```
 
-In your Elysia server, destructure `{ inlay, host, port }` from `seam()` and `.use(inlay)` after your routes. `inlay` is a `Promise<Elysia>` — Elysia awaits it before listening.
+In your Elysia server, destructure `{ inlay, host, port }` from `seam()` and `.use(inlay)` after your routes. `inlay` is a `Promise<Elysia>`; Elysia awaits it before listening.
 
 ```ts
 import { Elysia } from 'elysia'

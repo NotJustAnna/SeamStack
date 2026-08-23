@@ -1,6 +1,6 @@
 # @seamstack/hono
 
-Hono backend adapter for SeamStack — mounts a Seam frontend on a Hono app and serves built assets.
+Hono backend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/hono hono @hono/node-server
@@ -42,7 +42,7 @@ serve({ fetch: app.fetch, hostname: host, port }, () =>
 
 `inlay` is inert in dev (Vite/Astro/Angular handle the frontend then). In prod it serves the built SPA from the manifest written by `seam build`.
 
-You pass your runtime's `serveStatic` factory in — `@hono/node-server/serve-static` for Node, `hono/cloudflare-workers` on the edge, etc. SeamStack stays runtime-agnostic.
+You pass your runtime's `serveStatic` factory in: `@hono/node-server/serve-static` for Node, `hono/cloudflare-workers` on the edge, etc. SeamStack stays runtime-agnostic.
 
 ## More
 

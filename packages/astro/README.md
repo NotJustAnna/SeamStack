@@ -1,6 +1,6 @@
 # @seamstack/astro
 
-Astro frontend adapter for SeamStack — runs Astro's dev server and SSR build through the seam pipeline.
+Astro frontend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/astro astro
@@ -21,7 +21,7 @@ export default defineWeave({
 })
 ```
 
-That's it. No Astro integration to register, no `astro.config.mjs` edits — the adapter drives Astro programmatically.
+That's it. No Astro integration to register, no `astro.config.mjs` edits. The adapter drives Astro programmatically.
 
 In `seam dev`, Astro runs in a worker thread (so its stdout doesn't bleed into the seam's logs) and is reachable through the seam's public URL. In `seam build`, the seam invokes Astro's normal build and hands the manifest to your backend adapter.
 

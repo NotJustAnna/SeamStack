@@ -1,6 +1,6 @@
 # @seamstack/vite
 
-Vite frontend adapter and plugin for SeamStack — wires Vite's dev server and SSR build into the seam pipeline.
+Vite frontend adapter and plugin for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/vite vite
@@ -32,7 +32,7 @@ export default defineConfig({
 })
 ```
 
-In `seam dev`, Vite runs in-process on the main thread — `createServer()` is awaited directly inside the seam runtime, not spawned. In `seam build`, the seam invokes Vite's normal build and hands the manifest to your backend adapter.
+In `seam dev`, Vite runs in-process on the main thread: `createServer()` is awaited directly inside the seam runtime, not spawned. In `seam build`, the seam invokes Vite's normal build and hands the manifest to your backend adapter.
 
 ## More
 

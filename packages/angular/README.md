@@ -1,12 +1,12 @@
 # @seamstack/angular
 
-Angular frontend adapter for SeamStack — drives Angular's dev server and build pipeline through the seam.
+Angular frontend adapter for [SeamStack](https://github.com/NotJustAnna/SeamStack).
 
 ```bash
 pnpm add @seamstack/angular
 ```
 
-Peer-depends on `@angular-devkit/architect` and `@angular-devkit/core` — supports Angular 17 through 21.
+Peer-depends on `@angular-devkit/architect` and `@angular-devkit/core`. Supports Angular 17 through 21.
 
 ## Usage
 
@@ -23,7 +23,7 @@ export default defineWeave({
 })
 ```
 
-`project` is the project name from your `angular.json`. Nothing else changes — no custom builder, no `angular.json` edits. The adapter drives `ng serve` in dev and `ng build` in prod.
+`project` is the project name from your `angular.json`. Nothing else changes: no custom builder, no `angular.json` edits. The adapter drives `ng serve` in dev and `ng build` in prod.
 
 In `seam dev`, Angular runs in a worker thread (for stdout isolation) and is reachable through the seam's public URL. In `seam build`, the seam invokes Angular's normal build and hands the manifest to your backend adapter.
 
