@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: {
@@ -6,10 +6,13 @@ export default defineConfig({
     adapter: 'src/adapter.ts',
   },
   format: ['esm'],
+  fixedExtension: false,
   dts: true,
   clean: true,
   target: 'node20',
   sourcemap: true,
   splitting: false,
-  external: ['express', '@seamstack/core'],
+  deps: {
+    neverBundle: ['hono', '@hono/node-server', '@seamstack/core'],
+  },
 })

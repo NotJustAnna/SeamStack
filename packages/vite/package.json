@@ -15,7 +15,7 @@
   },
   "files": ["dist", "README.md"],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

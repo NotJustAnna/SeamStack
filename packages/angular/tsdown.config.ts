@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: {
@@ -7,15 +7,18 @@ export default defineConfig({
     'angular-worker': 'src/angular-worker.ts',
   },
   format: ['esm'],
+  fixedExtension: false,
   dts: true,
   clean: true,
   target: 'node20',
   sourcemap: true,
   splitting: false,
-  external: [
-    '@seamstack/core',
-    '@angular-devkit/architect',
-    '@angular-devkit/architect/node',
-    '@angular-devkit/core',
-  ],
+  deps: {
+    neverBundle: [
+      '@seamstack/core',
+      '@angular-devkit/architect',
+      '@angular-devkit/architect/node',
+      '@angular-devkit/core',
+    ],
+  },
 })

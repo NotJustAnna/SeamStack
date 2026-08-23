@@ -1,15 +1,18 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
-    bin: 'src/bin.ts',
+    adapter: 'src/adapter.ts',
   },
   format: ['esm'],
+  fixedExtension: false,
   dts: true,
   clean: true,
   target: 'node20',
   sourcemap: true,
   splitting: false,
-  external: ['@clack/prompts', 'cac', 'picocolors'],
+  deps: {
+    neverBundle: ['elysia', '@elysiajs/static', '@seamstack/core'],
+  },
 })

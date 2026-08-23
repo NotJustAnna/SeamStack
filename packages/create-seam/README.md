@@ -41,5 +41,5 @@ If you provide a name plus `--host` and `--backend`, the scaffolder runs headles
 ## Maintainer notes
 
 - Source-of-truth templates live at `templates/<name>/` and are workspace members (so `seam dev` works in-tree for dogfooding).
-- `pnpm build` runs `tsup` + `scripts/build-templates.ts`, which copies `templates/*` to `dist/templates/*` and rewrites every `workspace:*` dep to a concrete `^x.y.z` from the matching adapter package.
+- `pnpm build` runs `tsdown` + `scripts/build-templates.ts`, which copies `templates/*` to `dist/templates/*` and rewrites every `workspace:*` dep to a concrete `^x.y.z` from the matching adapter package.
 - JS variants are generated from their TS siblings by `scripts/generate-js-variants.ts` (idempotent: re-run after editing a TS template to refresh its JS variant).

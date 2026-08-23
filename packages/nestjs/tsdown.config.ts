@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: {
@@ -6,10 +6,18 @@ export default defineConfig({
     adapter: 'src/adapter.ts',
   },
   format: ['esm'],
+  fixedExtension: false,
   dts: true,
   clean: true,
   target: 'node20',
   sourcemap: true,
   splitting: false,
-  external: ['fastify', 'fastify-plugin', '@fastify/static', '@seamstack/core'],
+  deps: {
+    neverBundle: [
+      '@seamstack/core',
+      '@nestjs/common',
+      '@nestjs/core',
+      '@nestjs/platform-express',
+    ],
+  },
 })

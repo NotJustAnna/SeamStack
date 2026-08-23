@@ -25,7 +25,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const LAYERS_DIR = pickLayersDir()
 
 function pickLayersDir(): string {
-  // tsup builds to `dist/`; layer source lives at `<pkg>/layers`, but `build-layers.ts`
+  // tsdown builds to `dist/`; layer source lives at `<pkg>/layers`, but `build-layers.ts`
   // mirrors them into `<pkg>/dist/layers/` with workspace versions resolved + JS variants
   // generated. Prefer the built tree if present (production); fall back to source (dev/tests).
   const built = join(here, 'layers')
