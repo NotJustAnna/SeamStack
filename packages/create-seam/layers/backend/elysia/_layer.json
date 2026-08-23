@@ -9,6 +9,6 @@
   },
   "seamConfig": {
     "imports": ["import elysia from '@seamstack/elysia/adapter'"],
-    "fabric": ["elysia({ entry: './server/index.ts' })"]
+    "fabric": ["elysia({ entry: './server/index.ts'{{buildToolRuntimeArgs}} })"]
   }
 }

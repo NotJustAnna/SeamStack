@@ -8,9 +8,6 @@
     "@seamstack/cli": "workspace:*",
     "@seamstack/astro": "workspace:*"
   },
-  "devDepsTs": {
-    "tsx": "^4.21.0"
-  },
   "onlyBuiltDeps": ["esbuild"],
   "scriptsTs": {
     "typecheck": "astro check && tsc -p server/tsconfig.json"

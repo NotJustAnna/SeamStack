@@ -6,9 +6,6 @@
     "@seamstack/vite": "workspace:*",
     "vite": "^8.2.2"
   },
-  "devDepsTs": {
-    "tsx": "^4.21.0"
-  },
   "onlyBuiltDeps": ["esbuild"],
   "scriptsTs": {
     "typecheck": "tsc -p client/tsconfig.json && tsc -p server/tsconfig.json"

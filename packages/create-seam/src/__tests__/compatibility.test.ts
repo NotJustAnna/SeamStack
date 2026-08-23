@@ -90,6 +90,42 @@ describe('validateSpec', () => {
       expect.objectContaining({ field: 'addons' }),
     ])
   })
+
+  it('rejects tsc buildTool on a js project', () => {
+    expect(validateSpec(spec({ variant: 'js', buildTool: 'tsc' }))).toEqual([
+      expect.objectContaining({ field: 'buildTool' }),
+    ])
+  })
+
+  it('accepts a bundler buildTool on a js project', () => {
+    expect(validateSpec(spec({ variant: 'js', buildTool: 'esbuild' }))).toEqual([])
+  })
+
+  it('rejects buildTool on nestjs', () => {
+    expect(validateSpec(spec({ backend: 'nestjs', buildTool: 'tsc' }))).toEqual([
+      expect.objectContaining({ field: 'buildTool' }),
+    ])
+  })
+
+  it('rejects runtime on nestjs', () => {
+    expect(validateSpec(spec({ backend: 'nestjs', runtime: 'bun' }))).toEqual([
+      expect.objectContaining({ field: 'runtime' }),
+    ])
+  })
+
+  it('rejects runtime=node on a ts project with no buildTool (cannot run raw .ts)', () => {
+    expect(validateSpec(spec({ variant: 'ts', runtime: 'node' }))).toEqual([
+      expect.objectContaining({ field: 'runtime' }),
+    ])
+  })
+
+  it('accepts runtime=nub on a ts project with no buildTool (nub runs TS directly)', () => {
+    expect(validateSpec(spec({ variant: 'ts', runtime: 'nub' }))).toEqual([])
+  })
+
+  it('accepts runtime=node on a ts project when a buildTool compiles it first', () => {
+    expect(validateSpec(spec({ variant: 'ts', runtime: 'node', buildTool: 'esbuild' }))).toEqual([])
+  })
 })
 
 describe('isAddonCompatible', () => {

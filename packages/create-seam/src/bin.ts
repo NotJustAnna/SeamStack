@@ -14,13 +14,17 @@ import {
   ADDONS,
   ASTRO_UIS,
   BACKENDS,
+  BUILD_TOOLS,
   HOSTS,
+  RUNTIMES,
   VARIANTS,
   VITE_UIS,
   type Addon,
   type Backend,
+  type BuildTool,
   type Host,
   type ProjectSpec,
+  type Runtime,
   type Variant,
 } from './engine/spec.js'
 
@@ -34,6 +38,8 @@ interface CliFlags {
   ui?: string
   variant?: string
   backend?: string
+  buildTool?: string
+  runtime?: string
   addons?: string
   install?: boolean
   git?: boolean
@@ -53,6 +59,8 @@ cli
   )
   .option('--variant <variant>', `Language variant (${VARIANTS.join('|')})`)
   .option('--backend <name>', `Backend (${BACKENDS.join('|')})`)
+  .option('--build-tool <name>', `Compile/bundle the backend with this tool (${BUILD_TOOLS.join('|')})`)
+  .option('--runtime <name>', `Runtime for \`seam start\` (${RUNTIMES.join('|')})`)
   .option('--addons <names>', `Comma-separated addons (${ADDONS.join('|')})`)
   .option('--no-install', 'Skip installing dependencies')
   .option('--no-git', 'Skip initializing a git repository')
@@ -83,6 +91,8 @@ async function runCli(rawName: string | undefined, flags: CliFlags): Promise<voi
   const host = pickEnum(flags.host, HOSTS, '--host') as Host | undefined
   const variant = pickEnum(flags.variant, VARIANTS, '--variant') as Variant | undefined
   const backend = pickEnum(flags.backend, BACKENDS, '--backend') as Backend | undefined
+  const buildTool = pickEnum(flags.buildTool, BUILD_TOOLS, '--build-tool') as BuildTool | undefined
+  const runtime = pickEnum(flags.runtime, RUNTIMES, '--runtime') as Runtime | undefined
   const addons = parseAddons(flags.addons)
   const ui = parseUi(flags.ui, host)
 
@@ -106,6 +116,8 @@ async function runCli(rawName: string | undefined, flags: CliFlags): Promise<voi
       variant: variant ?? 'ts',
       backend: backend!,
       addons,
+      buildTool,
+      runtime,
     }
     install = flags.install ?? true
     git = flags.git ?? true
@@ -118,6 +130,8 @@ async function runCli(rawName: string | undefined, flags: CliFlags): Promise<voi
       ui,
       variant,
       backend,
+      buildTool,
+      runtime,
       addons: flags.addons !== undefined ? addons : undefined,
       install: flags.install,
       git: flags.git,

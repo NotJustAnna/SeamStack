@@ -17,7 +17,7 @@ import type {
 } from './manifest.js'
 import { copyTree } from './merge/copy.js'
 import { mergeIntoPackageJson } from './merge/json.js'
-import type { ProjectSpec } from './spec.js'
+import { defaultRuntimeFor, type ProjectSpec } from './spec.js'
 import { buildTemplateContext } from './template.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -120,7 +120,7 @@ export async function composeProject(
     await writeAngularJson(targetDir, angularFragments)
   }
 
-  const seam = renderSeamConfig(seamFragments, spec.variant)
+  const seam = renderSeamConfig(seamFragments, spec.variant, spec.buildTool, spec.runtime)
   await fs.writeFile(join(targetDir, seam.filename), seam.source, 'utf8')
 
   if (spec.variant === 'ts') {
@@ -154,6 +154,7 @@ export async function composeProject(
         pkgOverrides: manifest.pkgOverrides,
         origin: ref.id,
       })),
+      { devDeps: buildStrategyDevDeps(spec), origin: 'spec' },
       { pkgOverrides: { name: spec.name, private: undefined }, origin: 'spec' },
     ],
     { warn: opts.warn },
@@ -166,6 +167,18 @@ export async function composeProject(
   await ensureGitignore(targetDir)
 
   return { applied: refs, files: totalFiles }
+}
+
+/**
+ * `buildTool`/`runtime` are chosen per-project, not baked into any one
+ * layer's `_layer.json` — so their devDeps (the tool package itself, or
+ * `tsx` when it's actually the effective runtime) are computed here instead.
+ */
+function buildStrategyDevDeps(spec: ProjectSpec): Record<string, string> {
+  if (spec.backend === 'nestjs') return {}
+  if (spec.buildTool) return { [`@seamstack/${spec.buildTool}`]: 'workspace:*' }
+  const effectiveRuntime = spec.runtime ?? defaultRuntimeFor(spec.variant)
+  return effectiveRuntime === 'tsx' ? { tsx: '^4.21.0' } : {}
 }
 
 async function ensureGitignore(dir: string): Promise<void> {

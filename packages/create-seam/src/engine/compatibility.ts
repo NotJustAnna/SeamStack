@@ -10,7 +10,7 @@ import {
 } from './spec.js'
 
 export interface CompatError {
-  field: 'ui' | 'variant' | 'addons'
+  field: 'ui' | 'variant' | 'addons' | 'buildTool' | 'runtime'
   message: string
 }
 
@@ -20,6 +20,7 @@ export function validateSpec(spec: ProjectSpec): CompatError[] {
   errors.push(...validateUi(spec))
   errors.push(...validateVariant(spec))
   errors.push(...validateAddons(spec))
+  errors.push(...validateBuildStrategy(spec))
 
   return errors
 }
@@ -73,6 +74,38 @@ function validateVariant(spec: ProjectSpec): CompatError[] {
     return [{ field: 'variant', message: 'NestJS backend is TypeScript-only.' }]
   }
   return []
+}
+
+function validateBuildStrategy(spec: ProjectSpec): CompatError[] {
+  const errs: CompatError[] = []
+  if (spec.backend === 'nestjs') {
+    if (spec.buildTool) {
+      errs.push({
+        field: 'buildTool',
+        message: 'NestJS manages its own build via `nest build`/`nest start`; omit --build-tool.',
+      })
+    }
+    if (spec.runtime) {
+      errs.push({
+        field: 'runtime',
+        message: 'NestJS manages its own build via `nest build`/`nest start`; omit --runtime.',
+      })
+    }
+    return errs
+  }
+  if (spec.buildTool === 'tsc' && spec.variant !== 'ts') {
+    errs.push({
+      field: 'buildTool',
+      message: 'tsc compiles TypeScript; pick a bundler (esbuild/rollup/rolldown/webpack) or --variant ts.',
+    })
+  }
+  if (!spec.buildTool && spec.runtime === 'node' && spec.variant === 'ts') {
+    errs.push({
+      field: 'runtime',
+      message: 'node cannot execute a raw .ts entry directly; pick tsx/bun/nub/deno, or add --build-tool.',
+    })
+  }
+  return errs
 }
 
 const TRPC_FRONT_OK: Record<Host, ReadonlySet<string>> = {

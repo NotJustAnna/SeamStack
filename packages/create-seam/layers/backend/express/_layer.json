@@ -10,6 +10,6 @@
   },
   "seamConfig": {
     "imports": ["import express from '@seamstack/express/adapter'"],
-    "fabric": ["express({ entry: './server/index.ts' })"]
+    "fabric": ["express({ entry: './server/index.ts'{{buildToolRuntimeArgs}} })"]
   }
 }

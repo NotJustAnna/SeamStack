@@ -435,3 +435,83 @@ describe('composeProject — invalid spec', () => {
     ).rejects.toThrow(/Invalid project spec/)
   })
 })
+
+describe('composeProject — buildTool / runtime', () => {
+  it('no build: omits runtime from fabric and adds tsx as the only extra devDep', async () => {
+    const target = await compose({
+      name: 'nobuild',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'fastify',
+      addons: [],
+    })
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain("fastify({ entry: './server/index.ts' })")
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.devDependencies.tsx).toBeDefined()
+  })
+
+  it('no build + explicit non-default runtime: bakes runtime into fabric, no tsx devDep', async () => {
+    const target = await compose({
+      name: 'nobuildbun',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'fastify',
+      addons: [],
+      runtime: 'bun',
+    })
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain("fastify({ entry: './server/index.ts', runtime: 'bun' })")
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.devDependencies.tsx).toBeUndefined()
+  })
+
+  it('bundle: adds the buildTool import + devDep, no tsx, no runtime in fabric', async () => {
+    const target = await compose({
+      name: 'bundleit',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'fastify',
+      addons: [],
+      buildTool: 'esbuild',
+    })
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain("import esbuild from '@seamstack/esbuild'")
+    expect(seam).toContain("fastify({ entry: './server/index.ts', buildTool: esbuild() })")
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.devDependencies['@seamstack/esbuild']).toBe('workspace:*')
+    expect(pkg.devDependencies.tsx).toBeUndefined()
+  })
+
+  it('nestjs: buildTool/runtime are rejected outright', async () => {
+    await expect(
+      compose({
+        name: 'nestbad',
+        host: 'vite',
+        ui: 'vanilla',
+        variant: 'ts',
+        backend: 'nestjs',
+        addons: [],
+        buildTool: 'tsc',
+      }),
+    ).rejects.toThrow(/Invalid project spec/)
+  })
+
+  it('nestjs: never gets a tsx devDep even though variant is forced ts', async () => {
+    const target = await compose({
+      name: 'nestok',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'nestjs',
+      addons: [],
+    })
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.devDependencies.tsx).toBeUndefined()
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain('nestjs()')
+  })
+})

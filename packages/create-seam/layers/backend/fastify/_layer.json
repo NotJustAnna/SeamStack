@@ -7,6 +7,6 @@
   },
   "seamConfig": {
     "imports": ["import fastify from '@seamstack/fastify/adapter'"],
-    "fabric": ["fastify({ entry: './server/index.ts' })"]
+    "fabric": ["fastify({ entry: './server/index.ts'{{buildToolRuntimeArgs}} })"]
   }
 }

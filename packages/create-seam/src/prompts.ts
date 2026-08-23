@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
@@ -6,8 +7,14 @@ import {
   ADDON_LABEL,
   ASTRO_UI_LABEL,
   BACKEND_LABEL,
+  BUILD_STRATEGY_HINT,
+  BUILD_STRATEGY_LABEL,
+  BUILD_TOOL_HINT,
+  BUILD_TOOL_LABEL,
   HOST_HINT,
   HOST_LABEL,
+  RUNTIME_HINT,
+  RUNTIME_LABEL,
   VITE_UI_LABEL,
 } from './engine/catalog.js'
 import { isAddonCompatible } from './engine/compatibility.js'
@@ -15,14 +22,20 @@ import {
   ADDONS,
   ASTRO_UIS,
   BACKENDS,
+  defaultRuntimeFor,
+  forcedNoBuildStrategyReason,
   forcedVariantReason,
   HOSTS,
+  runtimeOptionsFor,
   VITE_UIS,
   type Addon,
   type AstroUi,
   type Backend,
+  type BuildStrategy,
+  type BuildTool,
   type Host,
   type ProjectSpec,
+  type Runtime,
   type Variant,
   type ViteUi,
 } from './engine/spec.js'
@@ -36,6 +49,8 @@ export interface PromptInput {
   ui?: string | string[]
   variant?: Variant
   backend?: Backend
+  buildTool?: BuildTool
+  runtime?: Runtime
   addons?: Addon[]
   install?: boolean
   git?: boolean
@@ -70,6 +85,7 @@ export async function runPrompts(input: PromptInput): Promise<PromptResult> {
   const ui = await ensureUi(input.ui, host)
   const backend = await ensureBackend(input.backend)
   const variant = await ensureVariant(input.variant, host, backend)
+  const { buildTool, runtime } = await ensureBuildStrategy(input.buildTool, input.runtime, backend, variant)
 
   const partialSpec: ProjectSpec = {
     name,
@@ -78,6 +94,8 @@ export async function runPrompts(input: PromptInput): Promise<PromptResult> {
     variant,
     backend,
     addons: [],
+    buildTool,
+    runtime,
   }
 
   const addons = await ensureAddons(input.addons, partialSpec)
@@ -190,6 +208,99 @@ async function ensureBackend(initial: Backend | undefined): Promise<Backend> {
   })
   if (p.isCancel(value)) cancel()
   return value as Backend
+}
+
+const BUNDLERS = ['esbuild', 'rollup', 'rolldown', 'webpack'] as const satisfies readonly BuildTool[]
+const COMPILERS = ['tsc', 'swc', 'oxc'] as const satisfies readonly BuildTool[]
+
+/** What launched `create-seam` itself — distinct from `@seamstack/core`'s own ambient detection at serve time. */
+function detectAmbientRuntime(): Runtime | undefined {
+  if (process.versions.bun) return 'bun'
+  if (typeof (globalThis as { Deno?: unknown }).Deno !== 'undefined') return 'deno'
+  const ua = process.env['npm_config_user_agent'] ?? ''
+  if (ua.startsWith('bun')) return 'bun'
+  if (ua.startsWith('nub')) return 'nub'
+  if (ua.startsWith('deno')) return 'deno'
+  return undefined
+}
+
+function isRuntimeAvailable(bin: string): boolean {
+  try {
+    const result = spawnSync(bin, ['--version'], { stdio: 'ignore', timeout: 1500 })
+    return !result.error && result.status === 0
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Preselects the runtime option for the "no build" path: prefer whatever
+ * actually launched `create-seam` (strongest signal), else probe the machine
+ * for bun/nub/deno actually being installed, else fall back to the variant's
+ * zero-config default. Only a preselection — the prompt still asks.
+ */
+function preselectRuntime(options: readonly Runtime[], variant: Variant): Runtime {
+  const ambient = detectAmbientRuntime()
+  if (ambient && options.includes(ambient)) return ambient
+  for (const candidate of ['bun', 'nub', 'deno'] as const) {
+    if (options.includes(candidate) && isRuntimeAvailable(candidate)) return candidate
+  }
+  return defaultRuntimeFor(variant)
+}
+
+async function ensureBuildStrategy(
+  initialBuildTool: BuildTool | undefined,
+  initialRuntime: Runtime | undefined,
+  backend: Backend,
+  variant: Variant,
+): Promise<{ buildTool?: BuildTool; runtime?: Runtime }> {
+  const forcedReason = forcedNoBuildStrategyReason(backend)
+  if (forcedReason) {
+    if (initialBuildTool !== undefined || initialRuntime !== undefined) {
+      throw new Error(`--build-tool/--runtime are incompatible with this backend: ${forcedReason}.`)
+    }
+    p.log.info(`${forcedReason} — skipping build/runtime configuration.`)
+    return {}
+  }
+
+  if (initialBuildTool !== undefined || initialRuntime !== undefined) {
+    return { buildTool: initialBuildTool, runtime: initialRuntime }
+  }
+
+  const categories = [
+    { value: 'none' as BuildStrategy, label: BUILD_STRATEGY_LABEL.none, hint: BUILD_STRATEGY_HINT.none },
+    { value: 'bundle' as BuildStrategy, label: BUILD_STRATEGY_LABEL.bundle, hint: BUILD_STRATEGY_HINT.bundle },
+    ...(variant === 'ts'
+      ? [{ value: 'compile' as BuildStrategy, label: BUILD_STRATEGY_LABEL.compile, hint: BUILD_STRATEGY_HINT.compile }]
+      : []),
+  ]
+  const category = await p.select({
+    message: 'How should the backend be built and run?',
+    options: categories,
+    initialValue: 'none' as BuildStrategy,
+  })
+  if (p.isCancel(category)) cancel()
+
+  if (category === 'none') {
+    const options = runtimeOptionsFor(variant)
+    const runtime = await p.select({
+      message: 'Runtime for `seam start`?',
+      options: options.map((r) => ({ value: r, label: RUNTIME_LABEL[r], hint: RUNTIME_HINT[r] })),
+      initialValue: preselectRuntime(options, variant),
+    })
+    if (p.isCancel(runtime)) cancel()
+    return { runtime: runtime as Runtime }
+  }
+
+  const tools = category === 'bundle' ? BUNDLERS : COMPILERS
+  const defaultTool: BuildTool = category === 'bundle' ? 'esbuild' : 'tsc'
+  const buildTool = await p.select({
+    message: category === 'bundle' ? 'Which bundler?' : 'Which compiler?',
+    options: tools.map((t) => ({ value: t, label: BUILD_TOOL_LABEL[t], hint: BUILD_TOOL_HINT[t] })),
+    initialValue: defaultTool,
+  })
+  if (p.isCancel(buildTool)) cancel()
+  return { buildTool: buildTool as BuildTool }
 }
 
 async function ensureAddons(

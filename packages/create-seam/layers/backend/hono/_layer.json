@@ -8,6 +8,6 @@
   },
   "seamConfig": {
     "imports": ["import hono from '@seamstack/hono/adapter'"],
-    "fabric": ["hono({ entry: './server/index.ts' })"]
+    "fabric": ["hono({ entry: './server/index.ts'{{buildToolRuntimeArgs}} })"]
   }
 }
