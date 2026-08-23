@@ -8,6 +8,5 @@
   "seamConfig": {
     "imports": ["import fastify from '@seamstack/fastify/adapter'"],
     "fabric": ["fastify({ entry: './server/index.ts' })"]
-  },
-  "hasJsVariant": true
+  }
 }

@@ -141,7 +141,10 @@ export async function composeProject(
       { pkgOverrides: { name: spec.name }, origin: 'spec' },
       ...manifests.map(({ manifest, ref }) => ({
         deps: manifest.deps,
-        devDeps: manifest.devDeps,
+        devDeps: {
+          ...manifest.devDeps,
+          ...(spec.variant === 'ts' ? manifest.devDepsTs : manifest.devDepsJs),
+        },
         peerDeps: manifest.peerDeps,
         onlyBuiltDeps: manifest.onlyBuiltDeps,
         scripts: manifest.scripts,

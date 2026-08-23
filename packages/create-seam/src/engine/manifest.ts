@@ -44,6 +44,10 @@ export interface LayerManifest {
   deps?: Record<string, string>
   /** Merged into root `package.json` `devDependencies`. */
   devDeps?: Record<string, string>
+  /** Merged into `devDependencies`, but only when `variant === 'ts'` (e.g. `@types/*` packages). */
+  devDepsTs?: Record<string, string>
+  /** Merged into `devDependencies`, but only when `variant === 'js'`. */
+  devDepsJs?: Record<string, string>
   /** Merged into root `package.json` `scripts`. Later layers win. */
   scripts?: Record<string, string>
   /** Merged into root `package.json` `peerDependencies`. */

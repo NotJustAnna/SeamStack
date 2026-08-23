@@ -69,3 +69,16 @@ export function uiList(spec: Pick<ProjectSpec, 'ui'>): string[] {
   if (spec.ui == null) return []
   return Array.isArray(spec.ui) ? spec.ui : [spec.ui]
 }
+
+/**
+ * `variant` is one language for the whole project (frontend + backend) — it can't be
+ * split per side. Angular and NestJS only ever emit TypeScript, so picking either
+ * already answers the language question; this reports why, so callers can skip
+ * asking (or reject a conflicting explicit `js`) instead of silently overriding it.
+ */
+export function forcedVariantReason(host: Host, backend: Backend): string | undefined {
+  if (host === 'angular' && backend === 'nestjs') return 'Angular and NestJS are both TypeScript-only'
+  if (host === 'angular') return 'Angular is TypeScript-only'
+  if (backend === 'nestjs') return 'NestJS is TypeScript-only'
+  return undefined
+}

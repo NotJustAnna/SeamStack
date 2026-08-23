@@ -15,6 +15,7 @@ import {
   ADDONS,
   ASTRO_UIS,
   BACKENDS,
+  forcedVariantReason,
   HOSTS,
   VITE_UIS,
   type Addon,
@@ -67,16 +68,14 @@ export async function runPrompts(input: PromptInput): Promise<PromptResult> {
 
   const host = await ensureHost(input.host)
   const ui = await ensureUi(input.ui, host)
-  const variantNeeded = host !== 'angular'
-  const variant = variantNeeded ? await ensureVariant(input.variant) : 'ts'
   const backend = await ensureBackend(input.backend)
-  const finalVariant = backend === 'nestjs' ? 'ts' : variant
+  const variant = await ensureVariant(input.variant, host, backend)
 
   const partialSpec: ProjectSpec = {
     name,
     host,
     ui,
-    variant: finalVariant,
+    variant,
     backend,
     addons: [],
   }
@@ -155,10 +154,23 @@ async function ensureUi(
   return value as string[]
 }
 
-async function ensureVariant(initial: Variant | undefined): Promise<Variant> {
+async function ensureVariant(
+  initial: Variant | undefined,
+  host: Host,
+  backend: Backend,
+): Promise<Variant> {
+  const reason = forcedVariantReason(host, backend)
+  if (reason) {
+    if (initial === 'js') {
+      throw new Error(`--variant js is incompatible with this choice of host/backend: ${reason}.`)
+    }
+    p.log.info(`${reason} — using TypeScript.`)
+    return 'ts'
+  }
+
   if (initial) return initial
   const value = await p.select({
-    message: 'Language?',
+    message: 'Language? (applies to the whole project — frontend and backend together)',
     options: [
       { value: 'ts', label: 'TypeScript' },
       { value: 'js', label: 'JavaScript' },

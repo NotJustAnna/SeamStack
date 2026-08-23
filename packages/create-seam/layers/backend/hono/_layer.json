@@ -9,6 +9,5 @@
   "seamConfig": {
     "imports": ["import hono from '@seamstack/hono/adapter'"],
     "fabric": ["hono({ entry: './server/index.ts' })"]
-  },
-  "hasJsVariant": true
+  }
 }

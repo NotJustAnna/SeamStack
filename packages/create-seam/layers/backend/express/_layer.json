@@ -5,12 +5,11 @@
     "@seamstack/express": "workspace:*",
     "express": "^5.2.1"
   },
-  "devDeps": {
+  "devDepsTs": {
     "@types/express": "^5.0.6"
   },
   "seamConfig": {
     "imports": ["import express from '@seamstack/express/adapter'"],
     "fabric": ["express({ entry: './server/index.ts' })"]
-  },
-  "hasJsVariant": true
+  }
 }
