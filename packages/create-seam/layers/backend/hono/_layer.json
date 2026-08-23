@@ -3,7 +3,7 @@
   "description": "Hono backend, mounted via @seamstack/hono.",
   "deps": {
     "@seamstack/hono": "workspace:*",
-    "hono": "^4.9.0"
+    "hono": "vendor:*"
   },
   "seamConfig": {
     "imports": ["import hono from '@seamstack/hono/adapter'"],

@@ -18,6 +18,7 @@ import type {
 import { copyTree } from './merge/copy.js'
 import { mergeIntoPackageJson } from './merge/json.js'
 import { defaultRuntimeFor, engineFor, needsResolvedRuntime, type ProjectSpec } from './spec.js'
+import vendorPkg from '../../vendor/package.json' with { type: 'json' }
 import { buildTemplateContext } from './template.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -190,7 +191,7 @@ function buildStrategyDevDeps(spec: ProjectSpec): Record<string, string> {
   if (spec.backend === 'nestjs') return {}
   if (spec.buildTool) return { [`@seamstack/${spec.buildTool}`]: 'workspace:*' }
   const effectiveRuntime = spec.runtime ?? defaultRuntimeFor(spec.variant)
-  return effectiveRuntime === 'tsx' ? { tsx: '^4.21.0' } : {}
+  return effectiveRuntime === 'tsx' ? { tsx: vendorPkg.devDependencies.tsx } : {}
 }
 
 /**
@@ -202,8 +203,12 @@ function buildStrategyDevDeps(spec: ProjectSpec): Record<string, string> {
  */
 function buildStrategyDeps(spec: ProjectSpec): Record<string, string> {
   const engine = engineFor(spec.runtime ?? 'node')
-  if (spec.backend === 'hono' && engine === 'node') return { '@hono/node-server': '^2.1.1' }
-  if (spec.backend === 'elysia' && engine === 'node') return { '@elysiajs/node': '^1.4.0' }
+  if (spec.backend === 'hono' && engine === 'node') {
+    return { '@hono/node-server': vendorPkg.dependencies['@hono/node-server'] }
+  }
+  if (spec.backend === 'elysia' && engine === 'node') {
+    return { '@elysiajs/node': vendorPkg.dependencies['@elysiajs/node'] }
+  }
   return {}
 }
 

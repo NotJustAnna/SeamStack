@@ -2,7 +2,7 @@
   "name": "ui:astro/mdx",
   "description": "MDX integration for Astro.",
   "deps": {
-    "@astrojs/mdx": "^7.0.7"
+    "@astrojs/mdx": "vendor:*"
   },
   "astroConfig": {
     "imports": ["import mdx from '@astrojs/mdx'"],

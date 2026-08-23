@@ -2,8 +2,8 @@
   "name": "ui:astro/vue",
   "description": "Vue integration for Astro.",
   "deps": {
-    "@astrojs/vue": "^7.0.2",
-    "vue": "^3.5.25"
+    "@astrojs/vue": "vendor:*",
+    "vue": "vendor:*"
   },
   "astroConfig": {
     "imports": ["import vue from '@astrojs/vue'"],

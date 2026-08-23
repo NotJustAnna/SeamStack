@@ -2,10 +2,10 @@
   "name": "ui:vite/solid",
   "description": "SolidJS UI for Vite.",
   "deps": {
-    "solid-js": "^1.9.10"
+    "solid-js": "vendor:*"
   },
   "devDeps": {
-    "vite-plugin-solid": "^2.11.0"
+    "vite-plugin-solid": "vendor:*"
   },
   "viteConfig": {
     "imports": ["import solid from 'vite-plugin-solid'"],

@@ -2,6 +2,6 @@
   "name": "ui:vite/lit",
   "description": "Lit web components for Vite.",
   "deps": {
-    "lit": "^3.3.0"
+    "lit": "vendor:*"
   }
 }

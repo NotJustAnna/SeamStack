@@ -2,7 +2,7 @@
   "name": "addon:trpc/server/hono",
   "description": "Mount tRPC under /trpc on Hono via @hono/trpc-server.",
   "deps": {
-    "@hono/trpc-server": "^0.4.2"
+    "@hono/trpc-server": "vendor:*"
   },
   "hasJsVariant": true
 }

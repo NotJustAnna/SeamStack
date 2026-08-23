@@ -2,16 +2,16 @@
   "name": "backend:nestjs",
   "description": "NestJS backend, mounted via @seamstack/nestjs.",
   "deps": {
-    "@nestjs/common": "^11.1.19",
-    "@nestjs/core": "^11.1.19",
-    "@nestjs/platform-express": "^11.1.18",
-    "@nestjs/serve-static": "^5.0.5",
+    "@nestjs/common": "vendor:*",
+    "@nestjs/core": "vendor:*",
+    "@nestjs/platform-express": "vendor:*",
+    "@nestjs/serve-static": "vendor:*",
     "@seamstack/nestjs": "workspace:*",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "reflect-metadata": "vendor:*",
+    "rxjs": "vendor:*"
   },
   "devDeps": {
-    "@nestjs/cli": "^11.0.21"
+    "@nestjs/cli": "vendor:*"
   },
   "seamConfig": {
     "imports": ["import nestjs from '@seamstack/nestjs/adapter'"],

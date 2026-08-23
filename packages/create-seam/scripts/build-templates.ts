@@ -3,7 +3,9 @@
  *   1. Walks every `<pkg>/layers/<id>/` source dir.
  *   2. Resolves `workspace:*` deps in each `_layer.json` against the monorepo
  *      package versions (so the published create-seam ships with concrete
- *      versions, not workspace refs).
+ *      versions, not workspace refs), and `vendor:*` deps against
+ *      `vendor/package.json` (the source of truth for third-party versions
+ *      create-seam scaffolds into new projects).
  *   3. Copies static files (`files/`, `files-ts/`) over to `dist/layers/<id>/`.
  *   4. For layers with `hasJsVariant: true`, generates a `files-js/` sibling
  *      from `files-ts/` via the regex stripper.
@@ -24,6 +26,8 @@ interface LayerManifest {
   deps?: Record<string, string>
   devDeps?: Record<string, string>
   peerDeps?: Record<string, string>
+  devDepsTs?: Record<string, string>
+  devDepsJs?: Record<string, string>
   [k: string]: unknown
 }
 
@@ -46,18 +50,44 @@ async function buildVersionMap(): Promise<Record<string, string>> {
   return map
 }
 
+/**
+ * `packages/create-seam/vendor/package.json` is the single source of truth
+ * for every third-party package version create-seam scaffolds into new
+ * projects — layers reference it via a `"vendor:*"` sentinel (mirroring the
+ * `"workspace:*"` one resolved by `buildVersionMap` above) instead of
+ * hand-copying the literal range.
+ */
+async function buildVendorVersionMap(): Promise<Record<string, string>> {
+  const vendorPath = join(PKG_DIR, 'vendor', 'package.json')
+  const pkg = JSON.parse(await fs.readFile(vendorPath, 'utf8')) as {
+    dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+  }
+  return { ...pkg.dependencies, ...pkg.devDependencies }
+}
+
 function rewriteDeps(
   deps: Record<string, string> | undefined,
   versionMap: Record<string, string>,
+  vendorVersionMap: Record<string, string>,
   layerId: string,
 ): void {
   if (!deps) return
   for (const [name, value] of Object.entries(deps)) {
-    if (typeof value === 'string' && value.startsWith('workspace:')) {
+    if (typeof value !== 'string') continue
+    if (value.startsWith('workspace:')) {
       const concrete = versionMap[name]
       if (!concrete) {
         throw new Error(
           `[${layerId}] cannot resolve ${name}@${value} — no matching package in /packages`,
+        )
+      }
+      deps[name] = concrete
+    } else if (value.startsWith('vendor:')) {
+      const concrete = vendorVersionMap[name]
+      if (!concrete) {
+        throw new Error(
+          `[${layerId}] cannot resolve ${name}@${value} — no matching entry in vendor/package.json`,
         )
       }
       deps[name] = concrete
@@ -105,6 +135,7 @@ async function findLayerDirs(root: string, prefix = ''): Promise<string[]> {
 async function buildLayer(
   layerId: string,
   versionMap: Record<string, string>,
+  vendorVersionMap: Record<string, string>,
 ): Promise<void> {
   const srcDir = join(LAYERS_SRC, layerId)
   const dstDir = join(LAYERS_DEST, layerId)
@@ -112,9 +143,11 @@ async function buildLayer(
   const manifestPath = join(srcDir, '_layer.json')
   const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8')) as LayerManifest
 
-  rewriteDeps(manifest.deps, versionMap, layerId)
-  rewriteDeps(manifest.devDeps, versionMap, layerId)
-  rewriteDeps(manifest.peerDeps, versionMap, layerId)
+  rewriteDeps(manifest.deps, versionMap, vendorVersionMap, layerId)
+  rewriteDeps(manifest.devDeps, versionMap, vendorVersionMap, layerId)
+  rewriteDeps(manifest.peerDeps, versionMap, vendorVersionMap, layerId)
+  rewriteDeps(manifest.devDepsTs, versionMap, vendorVersionMap, layerId)
+  rewriteDeps(manifest.devDepsJs, versionMap, vendorVersionMap, layerId)
 
   await fs.mkdir(dstDir, { recursive: true })
   await fs.writeFile(join(dstDir, '_layer.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8')
@@ -133,11 +166,12 @@ async function main(): Promise<void> {
     process.exit(1)
   }
   const versionMap = await buildVersionMap()
+  const vendorVersionMap = await buildVendorVersionMap()
   await fs.rm(LAYERS_DEST, { recursive: true, force: true })
 
   const layerIds = (await findLayerDirs(LAYERS_SRC)).sort()
   for (const id of layerIds) {
-    await buildLayer(id, versionMap)
+    await buildLayer(id, versionMap, vendorVersionMap)
   }
   console.log(`✓ Built ${layerIds.length} layers → ${relative(PKG_DIR, LAYERS_DEST)}/`)
 }

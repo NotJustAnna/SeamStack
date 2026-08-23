@@ -2,10 +2,10 @@
   "name": "addon:graphql/server/nestjs",
   "description": "Mount /graphql on NestJS via @nestjs/graphql + @nestjs/apollo.",
   "deps": {
-    "@nestjs/graphql": "^13.3.0",
-    "@nestjs/apollo": "^13.3.0",
-    "@apollo/server": "^5.5.0",
-    "@as-integrations/express5": "^1.1.2"
+    "@nestjs/graphql": "vendor:*",
+    "@nestjs/apollo": "vendor:*",
+    "@apollo/server": "vendor:*",
+    "@as-integrations/express5": "vendor:*"
   },
   "hasJsVariant": false
 }

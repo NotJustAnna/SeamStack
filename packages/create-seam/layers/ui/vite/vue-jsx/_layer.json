@@ -2,11 +2,11 @@
   "name": "ui:vite/vue-jsx",
   "description": "Vue 3 with JSX/TSX components.",
   "deps": {
-    "vue": "^3.5.25"
+    "vue": "vendor:*"
   },
   "devDeps": {
-    "@vitejs/plugin-vue": "^6.0.0",
-    "@vitejs/plugin-vue-jsx": "^5.1.5"
+    "@vitejs/plugin-vue": "vendor:*",
+    "@vitejs/plugin-vue-jsx": "vendor:*"
   },
   "viteConfig": {
     "imports": [

@@ -2,7 +2,7 @@
   "name": "addon:graphql/server/hono",
   "description": "Mount /graphql on Hono via @hono/graphql-server.",
   "deps": {
-    "@hono/graphql-server": "^0.7.0"
+    "@hono/graphql-server": "vendor:*"
   },
   "hasJsVariant": true
 }

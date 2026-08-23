@@ -9,6 +9,18 @@ updates:
         patterns:
           - "*"
 
+  # Third-party versions create-seam recommends to newly scaffolded projects
+  # (packages/create-seam/vendor/package.json) — kept separate from the repo's
+  # own tooling deps above, since these bump PRs answer a different question.
+  - package-ecosystem: "npm"
+    directory: "/packages/create-seam/vendor"
+    schedule:
+      interval: "weekly"
+    groups:
+      create-seam-vendor:
+        patterns:
+          - "*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

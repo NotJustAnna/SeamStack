@@ -2,8 +2,8 @@
   "name": "addon:tailwind/vite",
   "description": "Tailwind v4 wired into Vite via @tailwindcss/vite.",
   "devDeps": {
-    "tailwindcss": "^4.2.4",
-    "@tailwindcss/vite": "^4.2.4"
+    "tailwindcss": "vendor:*",
+    "@tailwindcss/vite": "vendor:*"
   },
   "viteConfig": {
     "imports": ["import tailwindcss from '@tailwindcss/vite'"],

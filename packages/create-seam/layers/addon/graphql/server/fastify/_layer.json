@@ -2,7 +2,7 @@
   "name": "addon:graphql/server/fastify",
   "description": "Mount /graphql on Fastify via mercurius.",
   "deps": {
-    "mercurius": "^16.0.0"
+    "mercurius": "vendor:*"
   },
   "hasJsVariant": true
 }

@@ -2,6 +2,6 @@
   "name": "ui:astro/alpine",
   "description": "Alpine.js integration for Astro (community-style: vendored alpinejs script).",
   "deps": {
-    "alpinejs": "^3.14.9"
+    "alpinejs": "vendor:*"
   }
 }

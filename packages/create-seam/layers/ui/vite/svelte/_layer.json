@@ -2,10 +2,10 @@
   "name": "ui:vite/svelte",
   "description": "Svelte 5 UI for Vite.",
   "deps": {
-    "svelte": "^5.44.1"
+    "svelte": "vendor:*"
   },
   "devDeps": {
-    "@sveltejs/vite-plugin-svelte": "^7.3.0"
+    "@sveltejs/vite-plugin-svelte": "vendor:*"
   },
   "viteConfig": {
     "imports": ["import { svelte } from '@sveltejs/vite-plugin-svelte'"],

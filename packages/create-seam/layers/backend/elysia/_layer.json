@@ -3,8 +3,8 @@
   "description": "Elysia backend, mounted via @seamstack/elysia.",
   "deps": {
     "@seamstack/elysia": "workspace:*",
-    "@sinclair/typebox": "^0.34.0",
-    "elysia": "^1.4.0"
+    "@sinclair/typebox": "vendor:*",
+    "elysia": "vendor:*"
   },
   "seamConfig": {
     "imports": ["import elysia from '@seamstack/elysia/adapter'"],

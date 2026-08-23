@@ -3,7 +3,7 @@
   "description": "Fastify backend, mounted via @seamstack/fastify.",
   "deps": {
     "@seamstack/fastify": "workspace:*",
-    "fastify": "^5.0.0"
+    "fastify": "vendor:*"
   },
   "seamConfig": {
     "imports": ["import fastify from '@seamstack/fastify/adapter'"],

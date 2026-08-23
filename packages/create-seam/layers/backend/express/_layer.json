@@ -3,10 +3,10 @@
   "description": "Express backend, mounted via @seamstack/express.",
   "deps": {
     "@seamstack/express": "workspace:*",
-    "express": "^5.2.1"
+    "express": "vendor:*"
   },
   "devDepsTs": {
-    "@types/express": "^5.0.6"
+    "@types/express": "vendor:*"
   },
   "seamConfig": {
     "imports": ["import express from '@seamstack/express/adapter'"],

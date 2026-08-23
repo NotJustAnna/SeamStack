@@ -2,10 +2,10 @@
   "name": "ui:vite/vue",
   "description": "Vue 3 UI for Vite (single-file components).",
   "deps": {
-    "vue": "^3.5.25"
+    "vue": "vendor:*"
   },
   "devDeps": {
-    "@vitejs/plugin-vue": "^6.0.0"
+    "@vitejs/plugin-vue": "vendor:*"
   },
   "viteConfig": {
     "imports": ["import vue from '@vitejs/plugin-vue'"],
