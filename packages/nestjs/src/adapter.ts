@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 import { execa } from 'execa'
 import {
   buildSpawnEnv,
@@ -163,8 +163,8 @@ export default function nestjs(opts: NestjsAdapterOptions = {}): Serveable {
       const serverDir = join(ctx.outDir, 'server')
       await mkdir(serverDir, { recursive: true })
       const manifest = {
-        assetsDir: peer.assetsDir,
-        indexHtml: peer.indexHtml,
+        assetsDir: relative(serverDir, peer.assetsDir),
+        indexHtml: relative(serverDir, peer.indexHtml),
       }
       const content = `export default ${JSON.stringify(manifest, null, 2)}\n`
       await writeFile(join(serverDir, '_seam_prod.js'), content, 'utf8')
