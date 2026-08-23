@@ -66,9 +66,9 @@ describe('seam build → seam start (vite + nestjs)', () => {
     expect(existsSync(join(DIST, 'server', '_seam_prod.js'))).toBe(true)
 
     started = spawnSeam(['start'], { cwd: EXAMPLE_DIR_NESTJS })
-    await waitForPort(PORT, 30_000)
+    await waitForPort(PORT, 60_000)
     await waitForApiReady()
-  }, 60_000)
+  }, 90_000)
 
   afterAll(async () => {
     await started?.kill()

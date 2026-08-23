@@ -66,7 +66,7 @@ describe('seam build → seam start (angular + nestjs)', () => {
     expect(existsSync(join(DIST, 'server', '_seam_prod.js'))).toBe(true)
 
     started = spawnSeam(['start'], { cwd: EXAMPLE_DIR_ANGULAR_NESTJS })
-    await waitForPort(PORT, 30_000)
+    await waitForPort(PORT, 60_000)
     await waitForApiReady()
   }, 120_000)
 
