@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/elysia",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Elysia backend adapter for SeamStack — mounts a Seam frontend on an Elysia app and serves built assets.",
   "type": "module",
   "exports": {
