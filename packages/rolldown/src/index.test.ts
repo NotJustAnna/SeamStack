@@ -48,12 +48,17 @@ describe('rolldown build tool', () => {
       (out) => rebuilds.push(out.entryPath),
     )
     try {
-      await new Promise((r) => setTimeout(r, 300))
+      // The watcher's initial build is asynchronous — under CI load a single
+      // fixed sleep is flaky, so poll instead of racing a timer.
+      const deadline = Date.now() + 10_000
+      while (rebuilds.length === 0 && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 50))
+      }
       expect(rebuilds.length).toBeGreaterThan(0)
       const content = await readFile(join(serverDir, 'index.js'), 'utf8')
       expect(content).toContain('hi from helper')
     } finally {
       await handle.stop()
     }
-  })
+  }, 15_000)
 })

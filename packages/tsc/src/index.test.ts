@@ -64,10 +64,15 @@ describe('tsc build tool', () => {
       (out) => rebuilds.push(out.entryPath),
     )
     try {
-      await new Promise((r) => setTimeout(r, 500))
+      // The watcher's initial build is asynchronous — under CI load a single
+      // fixed sleep is flaky, so poll instead of racing a timer.
+      const deadline = Date.now() + 10_000
+      while (rebuilds.length === 0 && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 50))
+      }
       expect(rebuilds.length).toBeGreaterThan(0)
     } finally {
       handle.stop()
     }
-  })
+  }, 15_000)
 })
