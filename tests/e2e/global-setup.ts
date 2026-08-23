@@ -24,6 +24,12 @@ const COMBOS: ComboDef[] = [
   { envKey: 'E2E_DIR_ASTRO_HONO_TS', port: 4574, spec: { name: 'app', host: 'astro', ui: null, variant: 'ts', backend: 'hono', addons: [] } },
   { envKey: 'E2E_DIR_ANGULAR_HONO', port: 4573, spec: { name: 'app', host: 'angular', ui: null, variant: 'ts', backend: 'hono', addons: [] } },
   { envKey: 'E2E_DIR_ANGULAR_NESTJS', port: 4574, spec: { name: 'app', host: 'angular', ui: null, variant: 'ts', backend: 'nestjs', addons: [] } },
+  // Elysia has real per-engine server-binding code (bare .listen() on Bun,
+  // Deno.serve on Deno, @elysiajs/node's adapter on Node) — these two combos
+  // exist specifically to catch the class of bug where the wrong branch gets
+  // baked in (concretely: @elysiajs/node crashes outright on Deno).
+  { envKey: 'E2E_DIR_VITE_ELYSIA_BUN', port: 4575, spec: { name: 'app', host: 'vite', ui: 'react', variant: 'ts', backend: 'elysia', addons: [], runtime: 'bun' } },
+  { envKey: 'E2E_DIR_VITE_ELYSIA_DENO', port: 4576, spec: { name: 'app', host: 'vite', ui: 'react', variant: 'ts', backend: 'elysia', addons: [], runtime: 'deno' } },
 ]
 
 async function rewriteSeamConfigPort(tmpDir: string, port: number): Promise<void> {

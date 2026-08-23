@@ -26,6 +26,7 @@ import {
   forcedNoBuildStrategyReason,
   forcedVariantReason,
   HOSTS,
+  needsResolvedRuntime,
   runtimeOptionsFor,
   VITE_UIS,
   type Addon,
@@ -282,14 +283,7 @@ async function ensureBuildStrategy(
   if (p.isCancel(category)) cancel()
 
   if (category === 'none') {
-    const options = runtimeOptionsFor(variant)
-    const runtime = await p.select({
-      message: 'Runtime for `seam start`?',
-      options: options.map((r) => ({ value: r, label: RUNTIME_LABEL[r], hint: RUNTIME_HINT[r] })),
-      initialValue: preselectRuntime(options, variant),
-    })
-    if (p.isCancel(runtime)) cancel()
-    return { runtime: runtime as Runtime }
+    return { runtime: await ensureRuntime(variant, backend) }
   }
 
   const tools = category === 'bundle' ? BUNDLERS : COMPILERS
@@ -300,7 +294,24 @@ async function ensureBuildStrategy(
     initialValue: defaultTool,
   })
   if (p.isCancel(buildTool)) cancel()
-  return { buildTool: buildTool as BuildTool }
+
+  // Fastify/Express are Node-only regardless of runtime, so their compiled path
+  // can leave `runtime` unset (defaults dynamically at `seam start` time). Hono/
+  // Elysia have real per-engine server-binding code baked into the entry file —
+  // that can't be left unresolved just because a buildTool was also chosen.
+  const runtime = needsResolvedRuntime(backend) ? await ensureRuntime(variant, backend) : undefined
+  return { buildTool: buildTool as BuildTool, runtime }
+}
+
+async function ensureRuntime(variant: Variant, backend: Backend): Promise<Runtime> {
+  const options = runtimeOptionsFor(variant, backend)
+  const runtime = await p.select({
+    message: 'Runtime for `seam start`?',
+    options: options.map((r) => ({ value: r, label: RUNTIME_LABEL[r], hint: RUNTIME_HINT[r] })),
+    initialValue: preselectRuntime(options, variant),
+  })
+  if (p.isCancel(runtime)) cancel()
+  return runtime as Runtime
 }
 
 async function ensureAddons(

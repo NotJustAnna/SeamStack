@@ -80,7 +80,7 @@ describe('composeProject — vite + react + ts + hono', () => {
     expect(seam).toContain("import vite from '@seamstack/vite/adapter'")
     expect(seam).toContain("import hono from '@seamstack/hono/adapter'")
     expect(seam).toContain("vite({ root: './client' })")
-    expect(seam).toContain("hono({ entry: './server/index.ts' })")
+    expect(seam).toContain("hono({ entry: './server/index.ts', runtime: 'tsx', devRuntime: 'tsx' })")
 
     const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8')) as {
       name: string
@@ -513,5 +513,138 @@ describe('composeProject — buildTool / runtime', () => {
     expect(pkg.devDependencies.tsx).toBeUndefined()
     const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
     expect(seam).toContain('nestjs()')
+  })
+})
+
+describe('composeProject — Hono/Elysia per-engine server binding', () => {
+  it('hono: no explicit runtime resolves to the Node engine and keeps @hono/node-server', async () => {
+    const target = await compose({
+      name: 'hononode',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'hono',
+      addons: [],
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).toContain("from '@hono/node-server'")
+    expect(index).not.toContain("from 'hono/bun'")
+    expect(index).not.toContain("from 'hono/deno'")
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.dependencies['@hono/node-server']).toBeDefined()
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain("runtime: 'tsx'")
+    expect(seam).toContain("devRuntime: 'tsx'")
+  })
+
+  it('hono: devRuntime is pinned to match runtime — seam dev must not run the Deno/Bun branch under tsx', async () => {
+    const target = await compose({
+      name: 'honodenodev',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'hono',
+      addons: [],
+      runtime: 'deno',
+    })
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).toContain("runtime: 'deno'")
+    expect(seam).toContain("devRuntime: 'deno'")
+  })
+
+  it('hono: runtime=bun takes the Bun branch and drops @hono/node-server', async () => {
+    const target = await compose({
+      name: 'honobun',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'hono',
+      addons: [],
+      runtime: 'bun',
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).toContain("from 'hono/bun'")
+    expect(index).toContain('Bun.serve(')
+    expect(index).not.toContain("from '@hono/node-server'")
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.dependencies['@hono/node-server']).toBeUndefined()
+  })
+
+  it('hono: runtime=deno takes the Deno branch', async () => {
+    const target = await compose({
+      name: 'honodeno',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'hono',
+      addons: [],
+      runtime: 'deno',
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).toContain("from 'hono/deno'")
+    expect(index).toContain('Deno.serve(')
+  })
+
+  it('elysia: no explicit runtime resolves to the Node engine and keeps @elysiajs/node', async () => {
+    const target = await compose({
+      name: 'elysianode',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'elysia',
+      addons: [],
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).toContain("from '@elysiajs/node'")
+    expect(index).toContain('adapter: node()')
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.dependencies['@elysiajs/node']).toBeDefined()
+  })
+
+  it('elysia: runtime=deno drops the node adapter and uses Deno.serve', async () => {
+    const target = await compose({
+      name: 'elysiadeno',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'elysia',
+      addons: [],
+      runtime: 'deno',
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).not.toContain('@elysiajs/node')
+    expect(index).toContain('Deno.serve(')
+    const pkg = JSON.parse(await fs.readFile(join(target, 'package.json'), 'utf8'))
+    expect(pkg.dependencies['@elysiajs/node']).toBeUndefined()
+  })
+
+  it('elysia: runtime=bun drops the node adapter but keeps .listen()', async () => {
+    const target = await compose({
+      name: 'elysiabun',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'elysia',
+      addons: [],
+      runtime: 'bun',
+    })
+    const index = await fs.readFile(join(target, 'server/index.ts'), 'utf8')
+    expect(index).not.toContain('@elysiajs/node')
+    expect(index).toContain('app.listen(')
+    expect(index).not.toContain('Deno.serve(')
+  })
+
+  it('fastify is unaffected: runtime stays omittable and unresolved for a compiled build', async () => {
+    const target = await compose({
+      name: 'fastifybundle',
+      host: 'vite',
+      ui: 'vanilla',
+      variant: 'ts',
+      backend: 'fastify',
+      addons: [],
+      buildTool: 'esbuild',
+    })
+    const seam = await fs.readFile(join(target, 'seam.config.ts'), 'utf8')
+    expect(seam).not.toContain('runtime:')
   })
 })

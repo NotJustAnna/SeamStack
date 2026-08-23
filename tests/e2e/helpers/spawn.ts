@@ -28,6 +28,8 @@ export const EXAMPLE_DIR_ELYSIA = envDir('E2E_DIR_VITE_ELYSIA_TS')
 export const EXAMPLE_DIR_ASTRO = envDir('E2E_DIR_ASTRO_HONO_TS')
 export const EXAMPLE_DIR_ANGULAR_HONO = envDir('E2E_DIR_ANGULAR_HONO')
 export const EXAMPLE_DIR_ANGULAR_NESTJS = envDir('E2E_DIR_ANGULAR_NESTJS')
+export const EXAMPLE_DIR_ELYSIA_BUN = envDir('E2E_DIR_VITE_ELYSIA_BUN')
+export const EXAMPLE_DIR_ELYSIA_DENO = envDir('E2E_DIR_VITE_ELYSIA_DENO')
 export const SEAM_BIN = resolve(REPO_ROOT, 'packages', 'cli', 'dist', 'bin.js')
 
 export interface SpawnOptions {

@@ -17,7 +17,7 @@ import type {
 } from './manifest.js'
 import { copyTree } from './merge/copy.js'
 import { mergeIntoPackageJson } from './merge/json.js'
-import { defaultRuntimeFor, type ProjectSpec } from './spec.js'
+import { defaultRuntimeFor, engineFor, needsResolvedRuntime, type ProjectSpec } from './spec.js'
 import { buildTemplateContext } from './template.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -48,10 +48,21 @@ export interface ComposeResult {
 }
 
 export async function composeProject(
-  spec: ProjectSpec,
+  inputSpec: ProjectSpec,
   targetDir: string,
   opts: ComposeOptions = {},
 ): Promise<ComposeResult> {
+  // Hono/Elysia have real per-engine server-binding code and can't leave `runtime`
+  // unresolved the way Fastify/Express's compiled path deliberately can — normalize
+  // once here so headless/CLI-flag/programmatic callers that skip the prompt (which
+  // already resolves it interactively) still get a concrete, predictable default.
+  const spec: ProjectSpec = {
+    ...inputSpec,
+    runtime:
+      inputSpec.runtime ??
+      (needsResolvedRuntime(inputSpec.backend) ? defaultRuntimeFor(inputSpec.variant) : inputSpec.runtime),
+  }
+
   const errors = validateSpec(spec)
   if (errors.length > 0) {
     throw new Error(
@@ -120,7 +131,7 @@ export async function composeProject(
     await writeAngularJson(targetDir, angularFragments)
   }
 
-  const seam = renderSeamConfig(seamFragments, spec.variant, spec.buildTool, spec.runtime)
+  const seam = renderSeamConfig(seamFragments, spec.variant, spec.buildTool, spec.runtime, spec.backend)
   await fs.writeFile(join(targetDir, seam.filename), seam.source, 'utf8')
 
   if (spec.variant === 'ts') {
@@ -155,6 +166,7 @@ export async function composeProject(
         origin: ref.id,
       })),
       { devDeps: buildStrategyDevDeps(spec), origin: 'spec' },
+      { deps: buildStrategyDeps(spec), origin: 'spec' },
       { pkgOverrides: { name: spec.name, private: undefined }, origin: 'spec' },
     ],
     { warn: opts.warn },
@@ -179,6 +191,20 @@ function buildStrategyDevDeps(spec: ProjectSpec): Record<string, string> {
   if (spec.buildTool) return { [`@seamstack/${spec.buildTool}`]: 'workspace:*' }
   const effectiveRuntime = spec.runtime ?? defaultRuntimeFor(spec.variant)
   return effectiveRuntime === 'tsx' ? { tsx: '^4.21.0' } : {}
+}
+
+/**
+ * `@hono/node-server`/`@elysiajs/node` are only needed when the resolved
+ * engine is actually Node — bloat otherwise (bun/deno ship their own
+ * server-binding via `hono/bun`/`hono/deno`/bare `.listen()`/`Deno.serve`,
+ * see the backend templates). These are real runtime `dependencies`, not
+ * devDeps, so they're computed separately from `buildStrategyDevDeps`.
+ */
+function buildStrategyDeps(spec: ProjectSpec): Record<string, string> {
+  const engine = engineFor(spec.runtime ?? 'node')
+  if (spec.backend === 'hono' && engine === 'node') return { '@hono/node-server': '^2.1.1' }
+  if (spec.backend === 'elysia' && engine === 'node') return { '@elysiajs/node': '^1.4.0' }
+  return {}
 }
 
 async function ensureGitignore(dir: string): Promise<void> {

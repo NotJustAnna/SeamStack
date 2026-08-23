@@ -1,5 +1,9 @@
 import { Elysia } from 'elysia'
+{{#unless isDenoEngine}}
+{{#unless isBunEngine}}
 import { node } from '@elysiajs/node'
+{{/unless}}
+{{/unless}}
 import { seam } from '@seamstack/elysia'
 {{#if hasTrpc}}
 import { trpcPlugin } from './trpc/mount.js'
@@ -10,7 +14,7 @@ import { yogaHandler } from './graphql/mount.js'
 
 const { inlay, host, port } = seam({ port: 3000 })
 
-new Elysia({ adapter: node() })
+const app = new Elysia({{#unless isDenoEngine}}{{#unless isBunEngine}}{ adapter: node() }{{/unless}}{{/unless}})
   .get('/api/hello', () => ({ msg: 'hi from elysia' }))
 {{#if hasTrpc}}
   .use(trpcPlugin)
@@ -19,8 +23,14 @@ new Elysia({ adapter: node() })
   .all('/graphql', ({ request }) => yogaHandler.handle(request))
 {{/if}}
   .use(await inlay)
-  .listen({ hostname: host, port }, () => {
-    console.log(
-      `Initialized an Elysia-based backend!\n    Listening on http://${host}:${port}`,
-    )
-  })
+
+{{#if isDenoEngine}}
+Deno.serve({ hostname: host, port }, app.fetch)
+console.log(`Initialized an Elysia-based backend!\n    Listening on http://${host}:${port}`)
+{{else}}
+app.listen({ hostname: host, port }, () => {
+  console.log(
+    `Initialized an Elysia-based backend!\n    Listening on http://${host}:${port}`,
+  )
+})
+{{/if}}

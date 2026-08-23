@@ -2,7 +2,6 @@
   "name": "backend:elysia",
   "description": "Elysia backend, mounted via @seamstack/elysia.",
   "deps": {
-    "@elysiajs/node": "^1.4.0",
     "@seamstack/elysia": "workspace:*",
     "@sinclair/typebox": "^0.34.0",
     "elysia": "^1.4.0"

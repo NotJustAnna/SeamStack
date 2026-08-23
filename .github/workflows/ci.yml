@@ -18,6 +18,14 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
@@ -25,3 +33,9 @@ jobs:
       - run: pnpm typecheck
 
       - run: pnpm -r --filter "./packages/*" test
+
+      - run: pnpm --filter e2e test
+        env:
+          E2E: '1'
+
+      - run: pnpm --filter matrix-e2e test

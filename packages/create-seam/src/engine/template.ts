@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars'
 import { stripTypes } from './strip-types.js'
-import { uiList, type ProjectSpec } from './spec.js'
+import { engineFor, uiList, type ProjectSpec } from './spec.js'
 
 /**
  * Context exposed to `.hbs` templates. Pre-computed booleans keep
@@ -20,6 +20,9 @@ export interface TemplateContext {
   // language
   readonly isTs: boolean
   readonly isJs: boolean
+  // backend engine (only meaningful for backends with per-engine server-binding code, e.g. hono/elysia)
+  readonly isBunEngine: boolean
+  readonly isDenoEngine: boolean
   // addons
   readonly hasTrpc: boolean
   readonly hasGraphql: boolean
@@ -50,6 +53,8 @@ export function buildTemplateContext(spec: ProjectSpec): TemplateContext {
     isAngular: spec.host === 'angular',
     isTs: spec.variant === 'ts',
     isJs: spec.variant === 'js',
+    isBunEngine: engineFor(spec.runtime ?? 'node') === 'bun',
+    isDenoEngine: engineFor(spec.runtime ?? 'node') === 'deno',
     hasTrpc: spec.addons.includes('trpc'),
     hasGraphql: spec.addons.includes('graphql'),
     hasTailwind: spec.addons.includes('tailwind'),

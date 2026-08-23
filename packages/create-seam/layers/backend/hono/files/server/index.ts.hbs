@@ -1,6 +1,12 @@
 import { Hono } from 'hono'
+{{#if isDenoEngine}}
+import { serveStatic } from 'hono/deno'
+{{else if isBunEngine}}
+import { serveStatic } from 'hono/bun'
+{{else}}
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
+{{/if}}
 import { seam } from '@seamstack/hono'
 {{#if hasTrpc}}
 import { trpcMiddleware } from './trpc/mount.js'
@@ -23,8 +29,16 @@ app.use('/trpc/*', trpcMiddleware)
 app.use('/graphql', graphqlMiddleware)
 {{/if}}
 
+{{#if isDenoEngine}}
+Deno.serve({ hostname: host, port }, app.fetch)
+console.log(`Initialized a Hono-based backend!\n    Listening on http://${host}:${port}`)
+{{else if isBunEngine}}
+Bun.serve({ fetch: app.fetch, hostname: host, port })
+console.log(`Initialized a Hono-based backend!\n    Listening on http://${host}:${port}`)
+{{else}}
 serve({ fetch: app.fetch, hostname: host, port }, (info) => {
   console.log(
     `Initialized a Hono-based backend!\n    Listening on http://${info.address}:${info.port}`,
   )
 })
+{{/if}}
