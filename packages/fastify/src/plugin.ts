@@ -13,7 +13,17 @@ export interface ProdManifest {
 }
 
 export interface SeamOptions {
-  /** Fallback port when not running under `seam` (e.g. `node server.js` directly). Defaults to 3000. */
+  /**
+   * Fallback host when not running under `seam` (e.g. `node server.js`
+   * directly) and `SEAM_HOST`-style wire data is absent. Leave unset to let
+   * Fastify apply its own default (`127.0.0.1`) instead of a seam-imposed one.
+   */
+  readonly host?: string
+  /**
+   * Fallback port when not running under `seam` and `$PORT` is unset. Leave
+   * unset to let Fastify/Node pick their own default (an OS-assigned
+   * ephemeral port).
+   */
   readonly port?: number
 }
 
@@ -22,13 +32,16 @@ export interface SeamOptions {
  *
  * - `inlay` — Fastify plugin to register **after** your routes. Falls through
  *   to the built SPA in prod; no-ops in dev.
- * - `host` — the host the seam expects this server to bind.
- * - `port` — the port the seam expects this server to bind.
+ * - `host` — the host the seam expects this server to bind. `undefined` when
+ *   running standalone with no `host` fallback given — spread it into
+ *   `listen()` as-is and Fastify applies its own default.
+ * - `port` — the port the seam expects this server to bind. `undefined` under
+ *   the same standalone conditions — Fastify/Node then pick an ephemeral port.
  */
 export interface SeamHandle {
   readonly inlay: FastifyPluginAsync
-  readonly host: string
-  readonly port: number
+  readonly host: string | undefined
+  readonly port: number | undefined
 }
 
 /**
@@ -46,42 +59,30 @@ export interface SeamHandle {
  * const app = Fastify()
  * app.get('/api/hello', async () => ({ msg: 'hi from fastify' }))
  *
- * const { inlay, host, port } = seam()
+ * const { inlay, ...opts } = seam()
  * await app.register(inlay)
  *
- * await app.listen({ host, port })
- * console.log(`[fastify] listening on http://${host}:${port}`)
+ * await app.listen({ ...opts })
+ * console.log(`[fastify] listening on http://${opts.host}:${opts.port}`)
  * ```
  */
 export function seam(options: SeamOptions = {}): SeamHandle {
   return {
     inlay: createInlay(),
-    host: seamHost(),
-    port: resolvePort(options.port ?? 3000),
+    host: resolveHost(options.host),
+    port: resolvePort(options.port),
   }
 }
 
-function resolvePort(fallback: number): number {
+function resolveHost(fallback: string | undefined): string | undefined {
+  return readFastifyWire()?.host ?? fallback
+}
+
+function resolvePort(fallback: number | undefined): number | undefined {
   const fromWire = readFastifyWire()?.port
   if (typeof fromWire === 'number') return fromWire
   const fromPort = process.env['PORT']
-  return Number(fromPort ?? fallback)
-}
-
-/**
- * Read the host SeamStack expects this server to bind. Falls back to
- * `fallback`, then `'127.0.0.1'`. Most users get this from `seam()` instead.
- */
-export function seamHost(fallback?: string): string {
-  return readFastifyWire()?.host ?? fallback ?? '127.0.0.1'
-}
-
-/**
- * Read the port SeamStack expects this server to bind. Falls back to `$PORT`,
- * then `fallback`. Most users get this from `seam()` instead.
- */
-export function seamPort(fallback = 3000): number {
-  return resolvePort(fallback)
+  return fromPort !== undefined ? Number(fromPort) : fallback
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {

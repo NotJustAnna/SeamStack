@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import express from 'express'
 import request from 'supertest'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { seam, seamHost } from './middleware.js'
+import { seam } from './middleware.js'
 import { EXPRESS_WIRE_ENV, writeExpressWire } from './wire.js'
 
 const originalPort = process.env['PORT']
@@ -47,24 +47,23 @@ describe('seam() port resolution (express)', () => {
     expect(seam({ port: 1234 }).port).toBe(1234)
   })
 
-  it('defaults to 3000 when nothing is set and no option given', () => {
-    expect(seam().port).toBe(3000)
+  it('is left undefined when nothing is set and no option given, so Express/Node apply their own default', () => {
+    expect(seam().port).toBeUndefined()
   })
 })
 
-describe('seamHost() (express)', () => {
+describe('seam() host resolution (express)', () => {
   it('reads host from wire env', () => {
     process.env[EXPRESS_WIRE_ENV] = writeExpressWire({ mode: 'dev', host: '0.0.0.0', port: 1 })
-    expect(seamHost()).toBe('0.0.0.0')
     expect(seam().host).toBe('0.0.0.0')
   })
 
-  it('falls back to provided fallback when wire absent', () => {
-    expect(seamHost('192.168.1.1')).toBe('192.168.1.1')
+  it('falls back to options.host when nothing is set', () => {
+    expect(seam({ host: '192.168.1.1' }).host).toBe('192.168.1.1')
   })
 
-  it('defaults to 127.0.0.1 when nothing is set', () => {
-    expect(seamHost()).toBe('127.0.0.1')
+  it('is left undefined when nothing is set and no option given, so Express/Node apply their own default', () => {
+    expect(seam().host).toBeUndefined()
   })
 })
 

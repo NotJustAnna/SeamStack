@@ -17,10 +17,10 @@ await app.register(trpcPlugin, { prefix: '/trpc', trpcOptions })
 await app.register(graphqlPlugin, graphqlOptions)
 {{/if}}
 
-const { inlay, host, port } = seam({ port: 3000 })
+const { inlay, ...opts } = seam({ port: 3000 })
 await app.register(inlay)
 
-await app.listen({ port, host })
+await app.listen({ ...opts })
 console.log(
-  `Initialized a Fastify-based backend!\n    Listening on http://${host}:${port}`,
+  `Initialized a Fastify-based backend!\n    Listening on http://${opts.host}:${opts.port}`,
 )

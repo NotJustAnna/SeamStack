@@ -8,7 +8,7 @@ import { graphqlHandler } from './graphql/mount.js'
 {{/if}}
 
 const app = express()
-const { inlay, host, port } = seam({ port: 3000 })
+const { inlay, host = '127.0.0.1', port = 3000 } = seam({ port: 3000 })
 
 app.get('/api/hello', (_req, res) => {
   res.json({ msg: 'hi from express' })

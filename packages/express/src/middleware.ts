@@ -8,7 +8,17 @@ import {
 import { readExpressWire } from './wire.js'
 
 export interface SeamOptions {
-  /** Fallback port when not running under `seam` (e.g. `node server.js` directly). Defaults to 3000. */
+  /**
+   * Fallback host when not running under `seam` (e.g. `node server.js`
+   * directly) and wire data is absent. Leave unset to let Express/Node apply
+   * their own default (listen on all interfaces) instead of a seam-imposed one.
+   */
+  readonly host?: string
+  /**
+   * Fallback port when not running under `seam` and `$PORT` is unset. Leave
+   * unset to let Express/Node pick their own default (an OS-assigned
+   * ephemeral port).
+   */
   readonly port?: number
 }
 
@@ -17,13 +27,20 @@ export interface SeamOptions {
  *
  * - `inlay` — Express middleware to mount **after** your routes. Falls
  *   through to the built SPA in prod; no-ops in dev.
- * - `host` — the host the seam expects this server to bind.
- * - `port` — the port the seam expects this server to bind.
+ * - `host` — the host the seam expects this server to bind. `undefined` when
+ *   running standalone with no `host` fallback given. Express's own
+ *   `listen(port, hostname, cb)` overloads require concrete values (unlike
+ *   Node's own `net.Server`, which allows both optional) — give `host`/`port`
+ *   a destructuring default (e.g. `host = '127.0.0.1'`) if you call `listen`
+ *   positionally, so Express/Node still apply their own default value when
+ *   seam doesn't have one.
+ * - `port` — the port the seam expects this server to bind. `undefined` under
+ *   the same standalone conditions.
  */
 export interface SeamHandle {
   readonly inlay: NodeMiddleware
-  readonly host: string
-  readonly port: number
+  readonly host: string | undefined
+  readonly port: number | undefined
 }
 
 /**
@@ -41,7 +58,7 @@ export interface SeamHandle {
  * const app = express()
  * app.get('/api/hello', (_req, res) => res.json({ msg: 'hi from express' }))
  *
- * const { inlay, host, port } = seam()
+ * const { inlay, host = '127.0.0.1', port = 3000 } = seam()
  * app.use(inlay)
  *
  * app.listen(port, host, () => console.log(`[express] listening on http://${host}:${port}`))
@@ -50,32 +67,20 @@ export interface SeamHandle {
 export function seam(options: SeamOptions = {}): SeamHandle {
   return {
     inlay: createInlay(),
-    host: seamHost(),
-    port: resolvePort(options.port ?? 3000),
+    host: resolveHost(options.host),
+    port: resolvePort(options.port),
   }
 }
 
-function resolvePort(fallback: number): number {
+function resolveHost(fallback: string | undefined): string | undefined {
+  return readExpressWire()?.host ?? fallback
+}
+
+function resolvePort(fallback: number | undefined): number | undefined {
   const fromWire = readExpressWire()?.port
   if (typeof fromWire === 'number') return fromWire
   const fromPort = process.env['PORT']
-  return Number(fromPort ?? fallback)
-}
-
-/**
- * Read the host SeamStack expects this server to bind. Falls back to
- * `fallback`, then `'127.0.0.1'`. Most users get this from `seam()` instead.
- */
-export function seamHost(fallback?: string): string {
-  return readExpressWire()?.host ?? fallback ?? '127.0.0.1'
-}
-
-/**
- * Read the port SeamStack expects this server to bind. Falls back to `$PORT`,
- * then `fallback`. Most users get this from `seam()` instead.
- */
-export function seamPort(fallback = 3000): number {
-  return resolvePort(fallback)
+  return fromPort !== undefined ? Number(fromPort) : fallback
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {

@@ -78,7 +78,7 @@ You can also do Vite + NestJS. Or Astro + Fastify. Or Angular + Hono. None of th
 
 | Adapter | Mount | Mounted via |
 |---|---|---|
-| `@seamstack/hono` | `/api` | `seam({ serveStatic, port })` returning `{ inlay, host, port }` |
+| `@seamstack/hono` | `/api` | `seam({ serveStatic, port })` returning `{ inlay, hostname, port }` |
 | `@seamstack/express` | `/api` | `app.use(inlay)` |
 | `@seamstack/fastify` | `/api` | `app.register(inlay)` |
 | `@seamstack/elysia` | `/api` | Elysia plugin (Node target via `@elysiajs/node`) |

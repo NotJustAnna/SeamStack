@@ -17,7 +17,7 @@ import { graphqlMiddleware } from './graphql/mount.js'
 
 const app = new Hono()
 
-const { inlay, host, port } = seam({ serveStatic, port: 3000 })
+const { inlay, ...opts } = seam({ serveStatic, port: 3000 })
 
 app.use(inlay)
 
@@ -30,13 +30,13 @@ app.use('/graphql', graphqlMiddleware)
 {{/if}}
 
 {{#if isDenoEngine}}
-Deno.serve({ hostname: host, port }, app.fetch)
-console.log(`Initialized a Hono-based backend!\n    Listening on http://${host}:${port}`)
+Deno.serve({ ...opts }, app.fetch)
+console.log(`Initialized a Hono-based backend!\n    Listening on http://${opts.hostname}:${opts.port}`)
 {{else if isBunEngine}}
-Bun.serve({ fetch: app.fetch, hostname: host, port })
-console.log(`Initialized a Hono-based backend!\n    Listening on http://${host}:${port}`)
+Bun.serve({ fetch: app.fetch, ...opts })
+console.log(`Initialized a Hono-based backend!\n    Listening on http://${opts.hostname}:${opts.port}`)
 {{else}}
-serve({ fetch: app.fetch, hostname: host, port }, (info) => {
+serve({ fetch: app.fetch, ...opts }, (info) => {
   console.log(
     `Initialized a Hono-based backend!\n    Listening on http://${info.address}:${info.port}`,
   )

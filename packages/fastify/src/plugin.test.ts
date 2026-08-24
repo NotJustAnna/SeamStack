@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import Fastify, { type FastifyInstance } from 'fastify'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { seam, seamHost } from './plugin.js'
+import { seam } from './plugin.js'
 import { FASTIFY_WIRE_ENV, writeFastifyWire } from './wire.js'
 
 const originalPort = process.env['PORT']
@@ -55,21 +55,23 @@ describe('seam() port resolution (fastify)', () => {
     expect(seam({ port: 1234 }).port).toBe(1234)
   })
 
-  it('defaults to 3000 when nothing is set and no option given', () => {
-    expect(seam().port).toBe(3000)
+  it('is left undefined when nothing is set and no option given, so Fastify applies its own default', () => {
+    expect(seam().port).toBeUndefined()
   })
 })
 
-describe('seamHost() (fastify)', () => {
+describe('seam() host resolution (fastify)', () => {
   it('reads host from wire env', () => {
     process.env[FASTIFY_WIRE_ENV] = writeFastifyWire({ mode: 'dev', host: '0.0.0.0', port: 1 })
-    expect(seamHost()).toBe('0.0.0.0')
     expect(seam().host).toBe('0.0.0.0')
   })
 
-  it('falls back to fallback then 127.0.0.1', () => {
-    expect(seamHost('192.168.1.1')).toBe('192.168.1.1')
-    expect(seamHost()).toBe('127.0.0.1')
+  it('falls back to options.host when nothing is set', () => {
+    expect(seam({ host: '192.168.1.1' }).host).toBe('192.168.1.1')
+  })
+
+  it('is left undefined when nothing is set and no option given, so Fastify applies its own default', () => {
+    expect(seam().host).toBeUndefined()
   })
 })
 

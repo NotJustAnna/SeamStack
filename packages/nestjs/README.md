@@ -43,10 +43,10 @@ import { SeamModule } from '@seamstack/nestjs'
 import { AppModule } from './app.module.js'
 
 const app = await NestFactory.create(AppModule)
-await app.listen(SeamModule.port(), SeamModule.host())
+await app.listen(SeamModule.port() ?? 3000, SeamModule.host() ?? '127.0.0.1')
 ```
 
-`SeamModule.port()` / `SeamModule.host()` and the standalone `seamPort()` / `seamHost()` exports are equivalent. Use whichever reads better at the call site.
+`SeamModule.port()` / `SeamModule.host()` and the standalone `seamPort()` / `seamHost()` exports are equivalent. Use whichever reads better at the call site. Both return `undefined` when seam has no port/host to hand you (e.g. running standalone with no fallback) — Nest's own `app.listen(port, hostname)` overloads require concrete values, so pair them with `??` as above rather than passing a fallback arg the type system can't see through.
 
 ## More
 

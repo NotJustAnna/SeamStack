@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { seam, seamHost, seamPort } from './middleware.js'
+import { seam } from './middleware.js'
 import { HONO_WIRE_ENV, writeHonoWire } from './wire.js'
 
 const originalPort = process.env['PORT']
@@ -47,32 +47,23 @@ describe('seam() port resolution', () => {
     expect(seam({ serveStatic, port: 1234 }).port).toBe(1234)
   })
 
-  it('defaults to 3000 when nothing is set and no option given', () => {
-    expect(seam({ serveStatic }).port).toBe(3000)
+  it('is left undefined when nothing is set and no option given, so serve() applies its own default', () => {
+    expect(seam({ serveStatic }).port).toBeUndefined()
   })
 })
 
-describe('seamHost() / seam().host', () => {
-  it('reads host from wire env', () => {
+describe('seam() hostname resolution', () => {
+  it('reads hostname from wire env', () => {
     process.env[HONO_WIRE_ENV] = writeHonoWire({ mode: 'dev', host: '0.0.0.0', port: 1 })
-    expect(seamHost()).toBe('0.0.0.0')
-    expect(seam({ serveStatic }).host).toBe('0.0.0.0')
+    expect(seam({ serveStatic }).hostname).toBe('0.0.0.0')
   })
 
-  it('falls back to provided fallback when wire absent', () => {
-    expect(seamHost('192.168.1.1')).toBe('192.168.1.1')
+  it('falls back to options.hostname when nothing is set', () => {
+    expect(seam({ serveStatic, hostname: '192.168.1.1' }).hostname).toBe('192.168.1.1')
   })
 
-  it('defaults to 127.0.0.1 when nothing is set', () => {
-    expect(seamHost()).toBe('127.0.0.1')
-    expect(seam({ serveStatic }).host).toBe('127.0.0.1')
-  })
-})
-
-describe('seamPort()', () => {
-  it('mirrors seam().port', () => {
-    process.env[HONO_WIRE_ENV] = writeHonoWire({ mode: 'prod', port: 7777 })
-    expect(seamPort()).toBe(7777)
+  it('is left undefined when nothing is set and no option given, so serve() applies its own default', () => {
+    expect(seam({ serveStatic }).hostname).toBeUndefined()
   })
 })
 

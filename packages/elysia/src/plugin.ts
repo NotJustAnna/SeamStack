@@ -12,7 +12,18 @@ export interface ProdManifest {
 }
 
 export interface SeamOptions {
-  /** Fallback port when not running under `seam`. Defaults to 3000. */
+  /**
+   * Fallback hostname when not running under `seam` and wire data is absent.
+   * Leave unset to let `.listen()`/`Bun.serve()`/`Deno.serve()` apply their
+   * own default instead of a seam-imposed one. Named `hostname` (not `host`)
+   * to match the key `.listen()` actually takes — spread the returned trio
+   * straight in.
+   */
+  readonly hostname?: string
+  /**
+   * Fallback port when not running under `seam` and `$PORT` is unset. Leave
+   * unset to let `.listen()` pick its own default.
+   */
   readonly port?: number
 }
 
@@ -21,23 +32,27 @@ export interface SeamOptions {
  *
  * - `inlay` — `Promise<Elysia>`. Pass to `.use(...)`; Elysia awaits it before
  *   listening. Serves the built SPA in prod; inert in dev.
- * - `host` — the host the seam expects this server to bind.
- * - `port` — the port the seam expects this server to bind.
+ * - `hostname` — the host the seam expects this server to bind. `undefined`
+ *   when running standalone with no `hostname` fallback given. Named to
+ *   match `.listen()`/`Bun.serve()`/`Deno.serve()`'s own option, so
+ *   `{ ...opts }` spreads straight in.
+ * - `port` — the port the seam expects this server to bind. `undefined`
+ *   under the same standalone conditions.
  *
  * `inlay` is async because the prod manifest must be loaded from disk before
  * the static plugin can be configured.
  */
 export interface SeamHandle {
   readonly inlay: Promise<Elysia>
-  readonly host: string
-  readonly port: number
+  readonly hostname: string | undefined
+  readonly port: number | undefined
 }
 
 /**
  * Wire your Elysia app into SeamStack.
  *
- * Returns the `host` + `port` the seam tells you to bind, plus an `inlay` that
- * serves the built SPA in prod (and is inert in dev).
+ * Returns the `hostname` + `port` the seam tells you to bind, plus an `inlay`
+ * that serves the built SPA in prod (and is inert in dev).
  *
  * @example
  * ```ts
@@ -45,45 +60,33 @@ export interface SeamHandle {
  * import { node } from '@elysiajs/node'
  * import { seam } from '@seamstack/elysia'
  *
- * const { inlay, host, port } = seam()
+ * const { inlay, ...opts } = seam()
  *
  * new Elysia({ adapter: node() })
  *   .get('/api/hello', () => ({ msg: 'hi from elysia' }))
  *   .use(inlay)
- *   .listen({ hostname: host, port }, () =>
- *     console.log(`[elysia] listening on http://${host}:${port}`),
+ *   .listen({ ...opts }, () =>
+ *     console.log(`[elysia] listening on http://${opts.hostname}:${opts.port}`),
  *   )
  * ```
  */
 export function seam(options: SeamOptions = {}): SeamHandle {
   return {
     inlay: buildInlay(),
-    host: seamHost(),
-    port: resolvePort(options.port ?? 3000),
+    hostname: resolveHostname(options.hostname),
+    port: resolvePort(options.port),
   }
 }
 
-function resolvePort(fallback: number): number {
+function resolveHostname(fallback: string | undefined): string | undefined {
+  return readElysiaWire()?.host ?? fallback
+}
+
+function resolvePort(fallback: number | undefined): number | undefined {
   const fromWire = readElysiaWire()?.port
   if (typeof fromWire === 'number') return fromWire
   const fromPort = process.env['PORT']
-  return Number(fromPort ?? fallback)
-}
-
-/**
- * Read the host SeamStack expects this server to bind. Falls back to
- * `fallback`, then `'127.0.0.1'`. Most users get this from `seam()` instead.
- */
-export function seamHost(fallback?: string): string {
-  return readElysiaWire()?.host ?? fallback ?? '127.0.0.1'
-}
-
-/**
- * Read the port SeamStack expects this server to bind. Falls back to `$PORT`,
- * then `fallback`. Most users get this from `seam()` instead.
- */
-export function seamPort(fallback = 3000): number {
-  return resolvePort(fallback)
+  return fromPort !== undefined ? Number(fromPort) : fallback
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {

@@ -21,7 +21,7 @@ export default defineWeave({
 })
 ```
 
-In your Hono server, destructure `{ inlay, host, port }` from `seam()` and mount `inlay` after your routes:
+In your Hono server, destructure `{ inlay, ...opts }` from `seam()` and mount `inlay` after your routes. `opts` is `{ hostname, port }` — named to match `serve()`'s own option, so it spreads straight in:
 
 ```ts
 import { Hono } from 'hono'
@@ -32,11 +32,11 @@ import { seam } from '@seamstack/hono'
 const app = new Hono()
 app.get('/api/hello', (c) => c.json({ msg: 'hi from hono' }))
 
-const { inlay, host, port } = seam({ serveStatic })
+const { inlay, ...opts } = seam({ serveStatic })
 app.use('*', inlay)
 
-serve({ fetch: app.fetch, hostname: host, port }, () =>
-  console.log(`[hono] listening on http://${host}:${port}`),
+serve({ fetch: app.fetch, ...opts }, () =>
+  console.log(`[hono] listening on http://${opts.hostname}:${opts.port}`),
 )
 ```
 

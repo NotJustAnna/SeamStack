@@ -30,7 +30,7 @@ import { seam } from '@seamstack/express'
 const app = express()
 app.get('/api/hello', (_req, res) => res.json({ msg: 'hi from express' }))
 
-const { inlay, host, port } = seam()
+const { inlay, host = '127.0.0.1', port = 3000 } = seam()
 app.use(inlay)
 
 app.listen(port, host, () =>

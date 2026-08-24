@@ -144,33 +144,47 @@ export class SeamModule {
     }
   }
 
-  /** Read the port SeamStack expects this server to bind. Falls back to `$PORT`, then `fallback`. */
-  static port(fallback = 3000): number {
+  /**
+   * Read the port SeamStack expects this server to bind. Falls back to
+   * `$PORT`, then `fallback` — `undefined` if that's also unset. Nest's own
+   * `app.listen(port, hostname)` overloads require a concrete `port`, so pair
+   * this with `?? 3000` (or your preferred default) at the call site rather
+   * than relying on `fallback` alone — the return type stays `| undefined`
+   * either way.
+   */
+  static port(fallback?: number): number | undefined {
     return seamPort(fallback)
   }
 
-  /** Read the host SeamStack expects this server to bind. Falls back to `fallback`, then `'127.0.0.1'`. */
-  static host(fallback?: string): string {
+  /**
+   * Read the host SeamStack expects this server to bind. Falls back to
+   * `fallback` — `undefined` if that's also unset. Nest's own
+   * `app.listen(port, hostname)` overloads require a concrete `hostname`, so
+   * pair this with `?? '127.0.0.1'` (or your preferred default) at the call
+   * site rather than relying on `fallback` alone.
+   */
+  static host(fallback?: string): string | undefined {
     return seamHost(fallback)
   }
 }
 
 /**
  * Read the port SeamStack expects this server to bind. Falls back to `$PORT`,
- * then `fallback`. Equivalent to `SeamModule.port(fallback)` — use whichever
- * reads better at the call site.
+ * then `fallback` — left `undefined` if that's also unset. Equivalent to
+ * `SeamModule.port(fallback)` — use whichever reads better at the call site.
  */
-export function seamPort(fallback = 3000): number {
+export function seamPort(fallback?: number): number | undefined {
   const fromWire = readNestjsWire()?.port
   if (typeof fromWire === 'number') return fromWire
   const fromPort = process.env['PORT']
-  return Number(fromPort ?? fallback)
+  return fromPort !== undefined ? Number(fromPort) : fallback
 }
 
 /**
  * Read the host SeamStack expects this server to bind. Falls back to
- * `fallback`, then `'127.0.0.1'`. Equivalent to `SeamModule.host(fallback)`.
+ * `fallback` — left `undefined` if that's also unset. Equivalent to
+ * `SeamModule.host(fallback)`.
  */
-export function seamHost(fallback?: string): string {
-  return readNestjsWire()?.host ?? fallback ?? '127.0.0.1'
+export function seamHost(fallback?: string): string | undefined {
+  return readNestjsWire()?.host ?? fallback
 }

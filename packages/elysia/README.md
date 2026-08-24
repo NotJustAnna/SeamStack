@@ -21,20 +21,20 @@ export default defineWeave({
 })
 ```
 
-In your Elysia server, destructure `{ inlay, host, port }` from `seam()` and `.use(inlay)` after your routes. `inlay` is a `Promise<Elysia>`; Elysia awaits it before listening.
+In your Elysia server, destructure `{ inlay, ...opts }` from `seam()` and `.use(inlay)` after your routes. `inlay` is a `Promise<Elysia>`; Elysia awaits it before listening. `opts` is `{ hostname, port }` — named to match `.listen()`'s own option, so it spreads straight in:
 
 ```ts
 import { Elysia } from 'elysia'
 import { node } from '@elysiajs/node'
 import { seam } from '@seamstack/elysia'
 
-const { inlay, host, port } = seam()
+const { inlay, ...opts } = seam()
 
 new Elysia({ adapter: node() })
   .get('/api/hello', () => ({ msg: 'hi from elysia' }))
   .use(inlay)
-  .listen({ hostname: host, port }, () =>
-    console.log(`[elysia] listening on http://${host}:${port}`),
+  .listen({ ...opts }, () =>
+    console.log(`[elysia] listening on http://${opts.hostname}:${opts.port}`),
   )
 ```
 

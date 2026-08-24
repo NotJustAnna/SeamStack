@@ -28,7 +28,18 @@ export type ServeStaticFn = (options?: ServeStaticOptions) => MiddlewareHandler
 export interface SeamOptions {
   /** Runtime-specific `serveStatic` factory. See {@link ServeStaticFn}. */
   readonly serveStatic: ServeStaticFn
-  /** Fallback port when not running under `seam` (e.g. `node server.js` directly). Defaults to 3000. */
+  /**
+   * Fallback hostname when not running under `seam` (e.g. `node server.js`
+   * directly) and wire data is absent. Leave unset to let your `serve()`/
+   * `Bun.serve()`/`Deno.serve()` apply its own default instead of a
+   * seam-imposed one. Named `hostname` (not `host`) to match the key your
+   * runtime's `serve()` actually takes — spread the returned trio straight in.
+   */
+  readonly hostname?: string
+  /**
+   * Fallback port when not running under `seam` and `$PORT` is unset. Leave
+   * unset to let your runtime's `serve()` pick its own default.
+   */
   readonly port?: number
 }
 
@@ -37,20 +48,24 @@ export interface SeamOptions {
  *
  * - `inlay` — middleware to mount **after** your routes. Falls through to the
  *   built SPA in prod; no-ops in dev.
- * - `host` — the host the seam expects this server to bind. In dev, always
- *   `127.0.0.1` (internal). In prod, the user's `--host` setting.
- * - `port` — the port the seam expects this server to bind.
+ * - `hostname` — the host the seam expects this server to bind. In dev,
+ *   always `127.0.0.1` (internal). In prod, the user's `--host` setting.
+ *   `undefined` when running standalone with no `hostname` fallback given.
+ *   Named to match `serve()`/`Bun.serve()`/`Deno.serve()`'s own option, so
+ *   `{ ...opts }` spreads straight in.
+ * - `port` — the port the seam expects this server to bind. `undefined`
+ *   under the same standalone conditions.
  */
 export interface SeamHandle {
   readonly inlay: MiddlewareHandler
-  readonly host: string
-  readonly port: number
+  readonly hostname: string | undefined
+  readonly port: number | undefined
 }
 
 /**
  * Wire your Hono app into SeamStack.
  *
- * Returns the `host` + `port` the seam tells you to bind, plus an `inlay`
+ * Returns the `hostname` + `port` the seam tells you to bind, plus an `inlay`
  * middleware that serves the built SPA in prod (and is inert in dev — Vite/
  * Astro/Angular handle the frontend then).
  *
@@ -64,47 +79,30 @@ export interface SeamHandle {
  * const app = new Hono()
  * app.get('/api/hello', (c) => c.json({ msg: 'hi from hono' }))
  *
- * const { inlay, host, port } = seam({ serveStatic })
+ * const { inlay, ...opts } = seam({ serveStatic })
  * app.use(inlay)
  *
- * serve({ fetch: app.fetch, hostname: host, port })
- * console.log(`[hono] listening on http://${host}:${port}`)
+ * serve({ fetch: app.fetch, ...opts })
+ * console.log(`[hono] listening on http://${opts.hostname}:${opts.port}`)
  * ```
  */
 export function seam(options: SeamOptions): SeamHandle {
   return {
     inlay: createInlay(options.serveStatic),
-    host: seamHost(),
-    port: resolvePort(options.port ?? 3000),
+    hostname: resolveHostname(options.hostname),
+    port: resolvePort(options.port),
   }
 }
 
-function resolvePort(fallback: number): number {
+function resolveHostname(fallback: string | undefined): string | undefined {
+  return readHonoWire()?.host ?? fallback
+}
+
+function resolvePort(fallback: number | undefined): number | undefined {
   const fromWire = readHonoWire()?.port
   if (typeof fromWire === 'number') return fromWire
   const fromPort = process.env['PORT']
-  return Number(fromPort ?? fallback)
-}
-
-/**
- * Read the host SeamStack expects this server to bind.
- *
- * Falls back to `fallback` if not running under seam, then `'127.0.0.1'`.
- * Most users get this from `seam()`'s return value instead — use this directly
- * only if you bind the server somewhere `seam()` can't reach.
- */
-export function seamHost(fallback?: string): string {
-  return readHonoWire()?.host ?? fallback ?? '127.0.0.1'
-}
-
-/**
- * Read the port SeamStack expects this server to bind.
- *
- * Falls back to `$PORT` (env var), then `fallback`. Most users get this from
- * `seam()`'s return value instead.
- */
-export function seamPort(fallback = 3000): number {
-  return resolvePort(fallback)
+  return fromPort !== undefined ? Number(fromPort) : fallback
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {

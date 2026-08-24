@@ -31,8 +31,8 @@ describe('SeamModule.port', () => {
     expect(SeamModule.port(1234)).toBe(1234)
   })
 
-  it('defaults to 3000', () => {
-    expect(SeamModule.port()).toBe(3000)
+  it('is left undefined when nothing is set, so app.listen() applies its own default', () => {
+    expect(SeamModule.port()).toBeUndefined()
   })
 })
 
@@ -43,9 +43,12 @@ describe('SeamModule.host / seamHost', () => {
     expect(seamHost()).toBe('0.0.0.0')
   })
 
-  it('falls back to fallback then 127.0.0.1', () => {
+  it('falls back to fallback arg', () => {
     expect(SeamModule.host('192.168.1.1')).toBe('192.168.1.1')
-    expect(SeamModule.host()).toBe('127.0.0.1')
+  })
+
+  it('is left undefined when nothing is set, so app.listen() applies its own default', () => {
+    expect(SeamModule.host()).toBeUndefined()
   })
 })
 

@@ -21,7 +21,7 @@ export default defineWeave({
 })
 ```
 
-In your Fastify server, destructure `{ inlay, host, port }` from `seam()` and register `inlay` after your routes:
+In your Fastify server, destructure `{ inlay, ...opts }` from `seam()` and register `inlay` after your routes. `opts` is `{ host, port }` — spread it straight into `listen()`:
 
 ```ts
 import Fastify from 'fastify'
@@ -30,11 +30,11 @@ import { seam } from '@seamstack/fastify'
 const app = Fastify()
 app.get('/api/hello', async () => ({ msg: 'hi from fastify' }))
 
-const { inlay, host, port } = seam()
+const { inlay, ...opts } = seam()
 await app.register(inlay)
 
-await app.listen({ host, port })
-console.log(`[fastify] listening on http://${host}:${port}`)
+await app.listen({ ...opts })
+console.log(`[fastify] listening on http://${opts.host}:${opts.port}`)
 ```
 
 `inlay` is inert in dev (Vite/Astro/Angular handle the frontend then). In prod it serves the built SPA via `@fastify/static` from the manifest written by `seam build`.

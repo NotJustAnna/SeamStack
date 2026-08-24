@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Elysia } from 'elysia'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { seam, seamHost } from './plugin.js'
+import { seam } from './plugin.js'
 import { ELYSIA_WIRE_ENV, writeElysiaWire } from './wire.js'
 
 const originalPort = process.env['PORT']
@@ -47,21 +47,23 @@ describe('seam() port resolution (elysia)', () => {
     expect(seam({ port: 1234 }).port).toBe(1234)
   })
 
-  it('defaults to 3000 when nothing is set and no option given', () => {
-    expect(seam().port).toBe(3000)
+  it('is left undefined when nothing is set and no option given, so .listen() applies its own default', () => {
+    expect(seam().port).toBeUndefined()
   })
 })
 
-describe('seamHost() (elysia)', () => {
-  it('reads host from wire env', () => {
+describe('seam() hostname resolution (elysia)', () => {
+  it('reads hostname from wire env', () => {
     process.env[ELYSIA_WIRE_ENV] = writeElysiaWire({ mode: 'dev', host: '0.0.0.0', port: 1 })
-    expect(seamHost()).toBe('0.0.0.0')
-    expect(seam().host).toBe('0.0.0.0')
+    expect(seam().hostname).toBe('0.0.0.0')
   })
 
-  it('falls back to fallback then 127.0.0.1', () => {
-    expect(seamHost('192.168.1.1')).toBe('192.168.1.1')
-    expect(seamHost()).toBe('127.0.0.1')
+  it('falls back to options.hostname when nothing is set', () => {
+    expect(seam({ hostname: '192.168.1.1' }).hostname).toBe('192.168.1.1')
+  })
+
+  it('is left undefined when nothing is set and no option given, so .listen() applies its own default', () => {
+    expect(seam().hostname).toBeUndefined()
   })
 })
 
