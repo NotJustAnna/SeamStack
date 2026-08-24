@@ -391,7 +391,7 @@ describe('createHostServeable', () => {
       })
       const devHandle = await adapter.dev(makeDevCtx(dir))
       await devHandle.stop()
-      expect(execaCalls).toEqual([{ bin: 'nub', args: ['run', join(dir, 'server.ts')], cwd: dir }])
+      expect(execaCalls).toEqual([{ bin: 'nub', args: [join(dir, 'server.ts')], cwd: dir }])
       execaCalls.length = 0
 
       await adapter.build(makeBuildCtx(dir))
@@ -433,7 +433,7 @@ describe('createHostServeable', () => {
         })
         const handle = await adapter.start(makeStartCtx(dir))
         await handle.stop()
-        expect(execaCalls).toEqual([{ bin: 'nub', args: ['run', join(dir, 'server.ts')], cwd: dir }])
+        expect(execaCalls).toEqual([{ bin: 'nub', args: [join(dir, 'server.ts')], cwd: dir }])
       })
 
       it('an explicit devRuntime/runtime always wins over ambient detection', async () => {

@@ -283,7 +283,7 @@ function spawnRunner(
     case 'bun':
       return spawnChild('bun', ['run', entryPath], env, cwd, member)
     case 'nub':
-      return spawnChild('nub', ['run', entryPath], env, cwd, member)
+      return spawnChild('nub', [entryPath], env, cwd, member)
     case 'deno':
       return spawnChild('deno', ['run', '--allow-all', entryPath], env, cwd, member)
   }
