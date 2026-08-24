@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/core",
-  "version": "0.4.0-rc1",
+  "version": "0.4.0-rc2",
   "description": "Core types and host-adapter contracts for SeamStack — pair any frontend with any backend.",
   "type": "module",
   "main": "./dist/index.js",

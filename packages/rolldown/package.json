@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/rolldown",
-  "version": "0.4.0-rc1",
+  "version": "0.4.0-rc2",
   "description": "Rolldown build tool for SeamStack backend adapters — bundles a TS server entry to JS for production.",
   "type": "module",
   "exports": {
