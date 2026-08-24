@@ -66,7 +66,10 @@ async function rewriteSeamPackages(pkgPath: string, matrixVersion: string): Prom
 async function writeNpmrc(tmpDir: string, registryUrl: string, token: string): Promise<void> {
   const registryHost = registryUrl.replace(/^https?:/, '')
   const lines = [
-    `registry=${registryUrl}`,
+    // Only @seamstack/* needs to resolve against verdaccio — everything else
+    // (react, vite, typescript, ...) should hit the real npm registry directly
+    // instead of being proxied through verdaccio's single-threaded process.
+    `@seamstack:registry=${registryUrl}`,
     `${registryHost}/:_authToken=${token}`,
     `audit=false`,
     `fund=false`,
@@ -82,10 +85,14 @@ async function scaffoldOne(combo: ComboDef, registryUrl: string, matrixVersion: 
   await rewriteSeamPackages(join(tmpDir, 'package.json'), matrixVersion)
   await writeNpmrc(tmpDir, registryUrl, token)
 
+  // No --registry / npm_config_registry override here: that would force every
+  // package (not just @seamstack/*) through verdaccio, which is exactly what
+  // the scoped `@seamstack:registry` in .npmrc is meant to avoid. Third-party
+  // deps resolve against the real npm registry per npm's normal defaults.
   const install = await execa(
     'npm',
-    ['install', '--no-audit', '--no-fund', '--prefer-online', '--legacy-peer-deps', '--registry', registryUrl],
-    { cwd: tmpDir, reject: false, all: true, env: { ...process.env, npm_config_registry: registryUrl } },
+    ['install', '--no-audit', '--no-fund', '--prefer-online', '--legacy-peer-deps'],
+    { cwd: tmpDir, reject: false, all: true },
   )
   if (install.exitCode !== 0) {
     throw new Error(`[e2e] npm install failed for ${combo.envKey}:\n${(install.all ?? '').slice(-2000)}`)
