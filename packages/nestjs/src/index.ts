@@ -1,8 +1,8 @@
 export {
   SeamModule,
+  SeamStitch,
   SeamSpaFilter,
-  seamHost,
-  seamPort,
+  type SeamStitchDefaults,
   type SeamModuleOptions,
   type ProdManifest,
 } from './module.js'

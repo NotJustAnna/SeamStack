@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { NotFoundException } from '@nestjs/common'
-import { SeamModule, SeamSpaFilter, seamHost, seamPort } from './module.js'
+import { NotFoundException, type INestApplication } from '@nestjs/common'
+import { SeamModule, SeamSpaFilter } from './module.js'
 import { NESTJS_WIRE_ENV, writeNestjsWire } from './wire.js'
 
 const originalPort = process.env['PORT']
@@ -16,46 +16,86 @@ afterEach(() => {
   else process.env['PORT'] = originalPort
 })
 
-describe('SeamModule.port', () => {
-  it('uses wire.port when wire env is set', () => {
-    process.env[NESTJS_WIRE_ENV] = writeNestjsWire({ mode: 'prod', port: 9999 })
-    expect(SeamModule.port()).toBe(9999)
+describe('SeamModule.stitch(app).listen()', () => {
+  function fakeApp(): { app: INestApplication; calls: unknown[][] } {
+    const calls: unknown[][] = []
+    const app = {
+      listen: (...args: unknown[]) => {
+        calls.push(args)
+        return Promise.resolve('server')
+      },
+    } as unknown as INestApplication
+    return { app, calls }
+  }
+
+  it('binds the wire host/port when running under seam', async () => {
+    process.env[NESTJS_WIRE_ENV] = writeNestjsWire({ mode: 'prod', host: '0.0.0.0', port: 9999 })
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app)
+    expect(stitch.host).toBe('0.0.0.0')
+    expect(stitch.port).toBe(9999)
+    await stitch.listen()
+    expect(calls).toEqual([[9999, '0.0.0.0']])
   })
 
-  it('falls back to PORT', () => {
+  it('defaults are fallbacks-only: the wire wins over them', async () => {
+    process.env[NESTJS_WIRE_ENV] = writeNestjsWire({ mode: 'prod', host: '0.0.0.0', port: 9999 })
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app).defaultPort(1234).defaultHost('192.168.1.1')
+    expect(stitch.host).toBe('0.0.0.0')
+    expect(stitch.port).toBe(9999)
+    await stitch.listen()
+    expect(calls).toEqual([[9999, '0.0.0.0']])
+  })
+
+  it('standalone with no host default omits the host argument, keeping Nest\'s own default', async () => {
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app)
+    expect(stitch.host).toBeUndefined()
+    expect(stitch.port).toBe(3000)
+    await stitch.listen()
+    expect(calls).toEqual([[3000]])
+  })
+
+  it('standalone applies chained defaults', async () => {
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app).defaultPort(1234).defaultHost('192.168.1.1')
+    expect(stitch.host).toBe('192.168.1.1')
+    expect(stitch.port).toBe(1234)
+    await stitch.listen()
+    expect(calls).toEqual([[1234, '192.168.1.1']])
+  })
+
+  it('defaults({ ... }) merges over earlier defaults', async () => {
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app).defaultHost('10.0.0.1').defaults({ port: 1234 })
+    expect(stitch.host).toBe('10.0.0.1')
+    expect(stitch.port).toBe(1234)
+    await stitch.listen()
+    expect(calls).toEqual([[1234, '10.0.0.1']])
+  })
+
+  it('each default*() returns a new stitch; the original stays untouched', () => {
+    const { app } = fakeApp()
+    const base = SeamModule.stitch(app)
+    const withPort = base.defaultPort(1234)
+    expect(base.port).toBe(3000)
+    expect(withPort.port).toBe(1234)
+    expect(withPort).not.toBe(base)
+  })
+
+  it('standalone still respects $PORT over the port default', async () => {
     process.env['PORT'] = '8888'
-    expect(SeamModule.port()).toBe(8888)
+    const { app, calls } = fakeApp()
+    const stitch = SeamModule.stitch(app).defaultPort(1234)
+    expect(stitch.port).toBe(8888)
+    await stitch.listen()
+    expect(calls).toEqual([[8888]])
   })
 
-  it('falls back to fallback arg', () => {
-    expect(SeamModule.port(1234)).toBe(1234)
-  })
-
-  it('is left undefined when nothing is set, so app.listen() applies its own default', () => {
-    expect(SeamModule.port()).toBeUndefined()
-  })
-})
-
-describe('SeamModule.host / seamHost', () => {
-  it('reads host from wire env', () => {
-    process.env[NESTJS_WIRE_ENV] = writeNestjsWire({ mode: 'dev', host: '0.0.0.0', port: 1 })
-    expect(SeamModule.host()).toBe('0.0.0.0')
-    expect(seamHost()).toBe('0.0.0.0')
-  })
-
-  it('falls back to fallback arg', () => {
-    expect(SeamModule.host('192.168.1.1')).toBe('192.168.1.1')
-  })
-
-  it('is left undefined when nothing is set, so app.listen() applies its own default', () => {
-    expect(SeamModule.host()).toBeUndefined()
-  })
-})
-
-describe('seamPort (top-level)', () => {
-  it('mirrors SeamModule.port', () => {
-    process.env[NESTJS_WIRE_ENV] = writeNestjsWire({ mode: 'prod', port: 7777 })
-    expect(seamPort()).toBe(7777)
+  it('resolves to app.listen()\'s own result', async () => {
+    const { app } = fakeApp()
+    await expect(SeamModule.stitch(app).listen()).resolves.toBe('server')
   })
 })
 

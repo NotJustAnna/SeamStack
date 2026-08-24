@@ -35,7 +35,7 @@ export class AppModule {}
 
 `SeamModule.forRoot()` is a no-op in dev (Vite/Astro/Angular handle the frontend then). In prod it wires `@nestjs/serve-static` to the manifest written by `seam build` and routes unmatched GET/HEAD requests through `SeamSpaFilter`.
 
-In `main.ts`, bind the host/port the seam picked:
+In `main.ts`, stitch the app to the seam and listen:
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -43,10 +43,20 @@ import { SeamModule } from '@seamstack/nestjs'
 import { AppModule } from './app.module.js'
 
 const app = await NestFactory.create(AppModule)
-await app.listen(SeamModule.port() ?? 3000, SeamModule.host() ?? '127.0.0.1')
+await SeamModule.stitch(app).defaultPort(3000).listen()
 ```
 
-`SeamModule.port()` / `SeamModule.host()` and the standalone `seamPort()` / `seamHost()` exports are equivalent. Use whichever reads better at the call site. Both return `undefined` when seam has no port/host to hand you (e.g. running standalone with no fallback) — Nest's own `app.listen(port, hostname)` overloads require concrete values, so pair them with `??` as above rather than passing a fallback arg the type system can't see through.
+`defaultPort()` / `defaultHost()` / `defaults({ host, port })` are exactly what they say — defaults. They apply only when not running under `seam` (e.g. `node dist/main.js` directly); the seam's wire always wins. With no seam and no host default, `listen()` omits the host argument entirely so Nest keeps its own default (listen on all interfaces), same as a stock `app.listen(port)`.
+
+A stitch is immutable and fully resolved the moment you hold it — each `default*()` returns a new stitch, and the readonly `host`/`port` fields are exactly what `listen()` binds:
+
+```ts
+const stitch = SeamModule.stitch(app).defaultPort(3000)
+await stitch.listen()
+console.log(`listening on port ${stitch.port}`)
+```
+
+(For the actually bound address, Nest's own `await app.getUrl()` is still the authority.)
 
 ## More
 

@@ -9,6 +9,7 @@ import {
   type DynamicModule,
   type ExceptionFilter,
   type HttpException,
+  type INestApplication,
 } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
@@ -76,6 +77,79 @@ export class SeamSpaFilter implements ExceptionFilter {
   }
 }
 
+export interface SeamStitchDefaults {
+  /**
+   * Fallback host when not running under `seam` and wire data is absent.
+   * Leave unset to let Nest apply its own default (listen on all interfaces),
+   * same as a stock `app.listen(port)`.
+   */
+  readonly host?: string
+  /**
+   * Fallback port when not running under `seam` and `$PORT` is unset.
+   * Defaults to 3000, matching Nest's own scaffold
+   * (`app.listen(process.env.PORT ?? 3000)`).
+   */
+  readonly port?: number
+}
+
+/**
+ * Joins a Nest app to the seam. Returned by {@link SeamModule.stitch}.
+ *
+ * The host/port are resolved at construction — wire first, then `$PORT`
+ * (port only), then the given defaults — and exposed as the readonly
+ * `host`/`port` fields, so what you read is exactly what `listen()` binds.
+ *
+ * A stitch is immutable: `defaultHost()`/`defaultPort()`/`defaults()` return
+ * a *new* fully-resolved stitch rather than mutating this one, so the fields
+ * of any instance you hold are always final. Defaults are exactly that —
+ * they apply only when the seam has no opinion; the wire always wins.
+ */
+export class SeamStitch {
+  /**
+   * The host this stitch binds. `undefined` when running standalone with no
+   * `host` default — `listen()` then omits the host argument entirely so
+   * Nest keeps its own default (listen on all interfaces).
+   */
+  readonly host: string | undefined
+  /** The port this stitch binds. */
+  readonly port: number
+
+  constructor(
+    private readonly app: INestApplication,
+    private readonly fallbacks: SeamStitchDefaults = {},
+  ) {
+    const wire = readNestjsWire()
+    const envPort = process.env['PORT']
+    this.port = wire?.port ?? (envPort !== undefined ? Number(envPort) : (fallbacks.port ?? 3000))
+    this.host = wire?.host ?? fallbacks.host
+  }
+
+  /** A new stitch whose port falls back to `port` when the seam has no opinion. */
+  defaultPort(port: number): SeamStitch {
+    return new SeamStitch(this.app, { ...this.fallbacks, port })
+  }
+
+  /** A new stitch whose host falls back to `host` when the seam has no opinion. */
+  defaultHost(host: string): SeamStitch {
+    return new SeamStitch(this.app, { ...this.fallbacks, host })
+  }
+
+  /** A new stitch with `defaults` merged over this one's. */
+  defaults(defaults: SeamStitchDefaults): SeamStitch {
+    return new SeamStitch(this.app, { ...this.fallbacks, ...defaults })
+  }
+
+  /**
+   * Bind the app to {@link host}:{@link port}. Resolves to whatever
+   * `app.listen()` resolves to (the underlying server).
+   */
+  async listen(): Promise<unknown> {
+    return this.host !== undefined
+      ? this.app.listen(this.port, this.host)
+      : this.app.listen(this.port)
+  }
+}
+
 /**
  * NestJS module that wires SeamStack into your app.
  *
@@ -83,8 +157,10 @@ export class SeamSpaFilter implements ExceptionFilter {
  * GET/HEAD routes (so client-side routing works). No-op in dev mode — the
  * asset-source dev server handles the frontend then.
  *
- * Also exposes static helpers for reading the seam-assigned host/port:
- * `SeamModule.host()` and `SeamModule.port()`.
+ * In `main.ts`, bind via `SeamModule.stitch(app).listen()`. The stitch's
+ * readonly `host`/`port` fields carry the resolved values if you need them
+ * (e.g. for logging) — though Nest's own `app.getUrl()` reports the actually
+ * bound address after `listen()`.
  *
  * @example
  * ```ts
@@ -100,7 +176,7 @@ export class SeamSpaFilter implements ExceptionFilter {
  * import { AppModule } from './app.module'
  *
  * const app = await NestFactory.create(AppModule)
- * await app.listen(SeamModule.port(), SeamModule.host())
+ * await SeamModule.stitch(app).defaultPort(3000).listen()
  * ```
  */
 @Module({})
@@ -145,46 +221,14 @@ export class SeamModule {
   }
 
   /**
-   * Read the port SeamStack expects this server to bind. Falls back to
-   * `$PORT`, then `fallback` — `undefined` if that's also unset. Nest's own
-   * `app.listen(port, hostname)` overloads require a concrete `port`, so pair
-   * this with `?? 3000` (or your preferred default) at the call site rather
-   * than relying on `fallback` alone — the return type stays `| undefined`
-   * either way.
+   * Join `app` to the seam. The returned {@link SeamStitch} resolves the
+   * host/port immediately (readonly `host`/`port` fields); chain
+   * `defaultPort()`/`defaultHost()`/`defaults()` for standalone fallbacks and
+   * call `.listen()` to bind:
+   * `await SeamModule.stitch(app).defaultPort(3000).listen()`.
    */
-  static port(fallback?: number): number | undefined {
-    return seamPort(fallback)
-  }
-
-  /**
-   * Read the host SeamStack expects this server to bind. Falls back to
-   * `fallback` — `undefined` if that's also unset. Nest's own
-   * `app.listen(port, hostname)` overloads require a concrete `hostname`, so
-   * pair this with `?? '127.0.0.1'` (or your preferred default) at the call
-   * site rather than relying on `fallback` alone.
-   */
-  static host(fallback?: string): string | undefined {
-    return seamHost(fallback)
+  static stitch(app: INestApplication): SeamStitch {
+    return new SeamStitch(app)
   }
 }
 
-/**
- * Read the port SeamStack expects this server to bind. Falls back to `$PORT`,
- * then `fallback` — left `undefined` if that's also unset. Equivalent to
- * `SeamModule.port(fallback)` — use whichever reads better at the call site.
- */
-export function seamPort(fallback?: number): number | undefined {
-  const fromWire = readNestjsWire()?.port
-  if (typeof fromWire === 'number') return fromWire
-  const fromPort = process.env['PORT']
-  return fromPort !== undefined ? Number(fromPort) : fallback
-}
-
-/**
- * Read the host SeamStack expects this server to bind. Falls back to
- * `fallback` — left `undefined` if that's also unset. Equivalent to
- * `SeamModule.host(fallback)`.
- */
-export function seamHost(fallback?: string): string | undefined {
-  return readNestjsWire()?.host ?? fallback
-}
