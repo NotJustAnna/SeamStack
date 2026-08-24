@@ -1,7 +1,7 @@
 {
   "name": "@seamstack/swc",
-  "version": "0.3.1",
-  "description": "SWC build tool for SeamStack backend adapters \u2014 compiles a TS server entry to JS for production.",
+  "version": "0.4.0-rc1",
+  "description": "SWC build tool for SeamStack backend adapters — compiles a TS server entry to JS for production.",
   "type": "module",
   "exports": {
     ".": {

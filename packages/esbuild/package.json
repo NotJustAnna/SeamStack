@@ -1,7 +1,7 @@
 {
   "name": "@seamstack/esbuild",
-  "version": "0.3.1",
-  "description": "esbuild build tool for SeamStack backend adapters \u2014 bundles a TS server entry to JS for production.",
+  "version": "0.4.0-rc1",
+  "description": "esbuild build tool for SeamStack backend adapters — bundles a TS server entry to JS for production.",
   "type": "module",
   "exports": {
     ".": {
