@@ -38,4 +38,6 @@ jobs:
         env:
           E2E: '1'
 
+      - run: pnpm --filter matrix-e2e exec playwright install --with-deps chromium
+
       - run: pnpm --filter matrix-e2e test
