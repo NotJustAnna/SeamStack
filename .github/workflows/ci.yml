@@ -38,6 +38,29 @@ jobs:
         env:
           E2E: '1'
 
+  matrix-e2e:
+    needs: ci
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
       - run: pnpm --filter matrix-e2e exec playwright install --with-deps chromium
 
       - run: pnpm --filter matrix-e2e test
+        env:
+          MATRIX_SHARD: ${{ matrix.shard }}/4
