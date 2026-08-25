@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import fastifyStatic from '@fastify/static'
-import { resolveManifestDir } from '@seamstack/core'
+import { resolveManifestDir } from '@seamstack/core/prod-manifest'
 import { readFastifyWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */

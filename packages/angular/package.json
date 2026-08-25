@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/angular",
-  "version": "0.4.0-rc4",
+  "version": "0.4.0-rc5",
   "description": "Angular frontend adapter for SeamStack — wires the Angular dev server and SSR build into the seam pipeline.",
   "type": "module",
   "exports": {

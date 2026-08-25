@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
-import { resolveManifestDir } from '@seamstack/core'
+import { resolveManifestDir } from '@seamstack/core/prod-manifest'
 import { readNestjsWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */

@@ -1,5 +1,5 @@
 import { basename, extname, join } from 'node:path'
-import type { RolldownOptions, WatchOptions as RolldownWatchOptions } from 'rolldown'
+import type { OutputOptions, RolldownOptions, WatchOptions as RolldownWatchOptions } from 'rolldown'
 import type { BuildTool, BuildToolContext, BuildToolOutput, BuildToolWatchHandle } from '@seamstack/core'
 
 export interface RolldownBuildOptions extends Partial<RolldownOptions> {}
@@ -9,12 +9,30 @@ const isExternal = (id: string) => !id.startsWith('.') && !id.startsWith('/')
 function resolve(ctx: BuildToolContext, options: RolldownBuildOptions | undefined) {
   const outName = basename(ctx.entryPath, extname(ctx.entryPath)) + '.js'
   const outfile = join(ctx.serverDir, outName)
+  const { output, ...rest } = options ?? {}
   const config: RolldownOptions = {
     external: isExternal,
-    ...options,
+    // This buildTool only ever compiles a Node server entry. Without an
+    // explicit platform, rolldown defaults to 'browser' for esm output,
+    // which breaks CJS interop: `require()` calls left in bundled
+    // CommonJS deps for genuinely external specifiers (including Node
+    // builtins) fall back to a runtime require() shim that doesn't exist
+    // in Node ESM, crashing at startup instead of resolving normally.
+    platform: 'node',
+    ...rest,
     input: ctx.entryPath,
   }
-  return { config, outfile }
+  // `format`/`file` are the buildTool's own contract (a single, predictably
+  // named entry in `serverDir`) and always win; everything else the caller
+  // sets on `output` (e.g. `codeSplitting: false`, needed once dependencies
+  // with dynamic `import()` end up bundled in) passes through untouched.
+  const outputOptions: OutputOptions = {
+    sourcemap: true,
+    ...(Array.isArray(output) ? output[0] : output),
+    format: 'esm',
+    file: outfile,
+  }
+  return { config, outfile, outputOptions }
 }
 
 /**
@@ -30,10 +48,10 @@ export default function rolldownBuildTool(options?: RolldownBuildOptions): Build
     name: 'rolldown',
     async build(ctx: BuildToolContext): Promise<BuildToolOutput> {
       const { rolldown } = await import('rolldown')
-      const { config, outfile } = resolve(ctx, options)
+      const { config, outfile, outputOptions } = resolve(ctx, options)
       const bundle = await rolldown(config)
       try {
-        await bundle.write({ format: 'esm', file: outfile, sourcemap: true })
+        await bundle.write(outputOptions)
       } finally {
         await bundle.close()
       }
@@ -44,10 +62,10 @@ export default function rolldownBuildTool(options?: RolldownBuildOptions): Build
       onRebuild: (out: BuildToolOutput) => void,
     ): Promise<BuildToolWatchHandle> {
       const { watch } = await import('rolldown')
-      const { config, outfile } = resolve(ctx, options)
+      const { config, outfile, outputOptions } = resolve(ctx, options)
       const watchOptions: RolldownWatchOptions = {
         ...config,
-        output: { format: 'esm', file: outfile, sourcemap: true },
+        output: outputOptions,
       }
       const watcher = watch(watchOptions)
       watcher.on('event', (event) => {

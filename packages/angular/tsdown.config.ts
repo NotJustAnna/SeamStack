@@ -12,7 +12,6 @@ export default defineConfig({
   clean: true,
   target: 'node20',
   sourcemap: true,
-  splitting: false,
   deps: {
     neverBundle: [
       '@seamstack/core',

@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { Elysia } from 'elysia'
 import { staticPlugin } from '@elysiajs/static'
-import { resolveManifestDir } from '@seamstack/core'
+import { resolveManifestDir } from '@seamstack/core/prod-manifest'
 import { readElysiaWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */

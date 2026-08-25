@@ -2,7 +2,7 @@ import { join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { Hono } from 'hono'
 import type { Context, MiddlewareHandler } from 'hono'
-import { resolveManifestDir } from '@seamstack/core'
+import { resolveManifestDir } from '@seamstack/core/prod-manifest'
 import { readHonoWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */

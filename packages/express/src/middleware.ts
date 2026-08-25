@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { resolveManifestDir } from '@seamstack/core'
+import { resolveManifestDir } from '@seamstack/core/prod-manifest'
 import {
   createNodeServeAssets,
   type NodeMiddleware,

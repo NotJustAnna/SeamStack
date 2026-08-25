@@ -1,9 +1,18 @@
-# Instructions
+Hi Claude, this is Anna, the creator of this repo, SeamStack.
 
-## SeamStack's Main Philosophy
+## What's SeamStack About
 
-> Be as seamless as possible.
+In as few words as possible:
 
-This means using the tools given by the platform to create a seamless experience for users. This includes:
+- `pnpm create seam@latest && pnpm dev`,
+- with a single package.json (no workspaces or monorepo),
+- with whatever frontend,
+- with whatever backend,
+- with a single `seam` cli and a config file inspired by Vite.
 
-- Using the framework's built-in features to create a seamless experience for users insead of reimplementing features that are already provided by the framework.
+This means:
+
+- Using the framework's built-in features.
+- Using the framework's defaults & conventions instead of "reasonable assumptions" & "best practices".
+
+The user wants to use their preferred frontend and backend combo, and SeamStack should, first and foremost, **get out of the way**. If a framework wants to shoot itself in the foot, SeamStack should help load the framework's gun.

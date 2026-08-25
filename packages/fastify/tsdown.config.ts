@@ -11,7 +11,6 @@ export default defineConfig({
   clean: true,
   target: 'node20',
   sourcemap: true,
-  splitting: false,
   deps: {
     neverBundle: ['fastify', 'fastify-plugin', '@fastify/static', '@seamstack/core'],
   },
