@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/hono",
-  "version": "0.4.0-rc2",
+  "version": "0.4.0-rc3",
   "description": "Hono backend adapter for SeamStack — mounts a Seam frontend on a Hono app and serves built assets.",
   "type": "module",
   "exports": {

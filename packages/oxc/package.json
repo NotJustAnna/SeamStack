@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/oxc",
-  "version": "0.4.0-rc2",
+  "version": "0.4.0-rc3",
   "description": "Oxc build tool for SeamStack backend adapters — compiles a TS server entry to JS for production.",
   "type": "module",
   "exports": {

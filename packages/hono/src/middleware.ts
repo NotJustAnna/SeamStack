@@ -2,6 +2,7 @@ import { join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { Hono } from 'hono'
 import type { Context, MiddlewareHandler } from 'hono'
+import { resolveManifestDir } from '@seamstack/core'
 import { readHonoWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */
@@ -106,7 +107,7 @@ function resolvePort(fallback: number | undefined): number | undefined {
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {
-  const dir = readHonoWire()?.distDir ?? process.cwd()
+  const dir = resolveManifestDir(readHonoWire()?.distDir)
   const path = join(dir, '_seam_prod.js')
   try {
     const mod = (await import(pathToFileURL(path).href)) as

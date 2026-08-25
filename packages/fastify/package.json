@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/fastify",
-  "version": "0.4.0-rc2",
+  "version": "0.4.0-rc3",
   "description": "Fastify backend adapter for SeamStack — mounts a Seam frontend as a Fastify plugin and serves built assets.",
   "type": "module",
   "exports": {

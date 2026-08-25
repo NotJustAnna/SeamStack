@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
+import { resolveManifestDir } from '@seamstack/core'
 import { readNestjsWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */
@@ -29,7 +30,7 @@ export interface SeamModuleOptions {
 const SEAM_INDEX_BODY = Symbol.for('@seamstack/nestjs:indexBody')
 
 async function loadManifest(): Promise<ProdManifest | null> {
-  const dir = readNestjsWire()?.distDir ?? process.cwd()
+  const dir = resolveManifestDir(readNestjsWire()?.distDir)
   const path = join(dir, '_seam_prod.js')
   try {
     const mod = (await import(pathToFileURL(path).href)) as

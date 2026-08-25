@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url'
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
 import fastifyStatic from '@fastify/static'
+import { resolveManifestDir } from '@seamstack/core'
 import { readFastifyWire } from './wire.js'
 
 /** Shape written to `_seam_prod.js` by `seam build`; loaded in prod to find the SPA. */
@@ -86,7 +87,7 @@ function resolvePort(fallback: number | undefined): number | undefined {
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {
-  const dir = readFastifyWire()?.distDir ?? process.cwd()
+  const dir = resolveManifestDir(readFastifyWire()?.distDir)
   const path = join(dir, '_seam_prod.js')
   try {
     const mod = (await import(pathToFileURL(path).href)) as

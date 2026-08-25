@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { resolveManifestDir } from '@seamstack/core'
 import {
   createNodeServeAssets,
   type NodeMiddleware,
@@ -84,7 +85,7 @@ function resolvePort(fallback: number | undefined): number | undefined {
 }
 
 async function loadManifest(): Promise<ProdManifest | null> {
-  const dir = readExpressWire()?.distDir ?? process.cwd()
+  const dir = resolveManifestDir(readExpressWire()?.distDir)
   const path = join(dir, '_seam_prod.js')
   try {
     const mod = (await import(pathToFileURL(path).href)) as
