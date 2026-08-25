@@ -1,6 +1,6 @@
 {
   "name": "@seamstack/astro",
-  "version": "0.4.0-rc3",
+  "version": "0.4.0-rc4",
   "description": "Astro frontend adapter for SeamStack — runs Astro's dev server and SSR build through the seam pipeline.",
   "type": "module",
   "exports": {

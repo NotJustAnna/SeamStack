@@ -28,6 +28,19 @@ describe('resolveManifestDir', () => {
     expect(resolveManifestDir(undefined)).toBe(serverDir)
   })
 
+  it('walks up from argv[1] itself when it is a directory (node auto-resolving its index.js)', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'seam-manifest-dir-'))
+    const serverDir = join(root, 'dist', 'server')
+    await mkdir(serverDir, { recursive: true })
+    await writeFile(join(serverDir, 'index.js'), '', 'utf8')
+    await writeFile(join(serverDir, '_seam_prod.js'), 'export default {}\n', 'utf8')
+
+    // `node dist/server` leaves argv[1] as the directory, not `.../index.js`.
+    process.argv[1] = serverDir
+
+    expect(resolveManifestDir(undefined)).toBe(serverDir)
+  })
+
   it('falls back to process.cwd() when no manifest is found walking up', async () => {
     const root = await mkdtemp(join(tmpdir(), 'seam-manifest-empty-'))
     process.argv[1] = join(root, 'index.js')
