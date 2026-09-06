@@ -45,9 +45,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@fastify/static": "^9.3.0",
+    "@fastify/static": "^10.1.3",
     "@seamstack/core": "workspace:*",
-    "fastify-plugin": "^5.1.0"
+    "fastify-plugin": "^6.0.0"
   },
   "peerDependencies": {
     "fastify": "^5"
