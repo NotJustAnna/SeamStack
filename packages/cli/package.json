@@ -53,9 +53,9 @@
     "esbuild": "^0.28.2",
     "ink": "^7.1.1",
     "picocolors": "^1.1.1",
-    "react": "^19.2.8"
+    "react": "^19.3.0"
   },
   "devDependencies": {
-    "@types/react": "^19.2.18"
+    "@types/react": "^19.3.0"
   }
 }
