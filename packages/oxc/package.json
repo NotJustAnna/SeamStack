@@ -46,6 +46,6 @@
     "oxc-transform": "^0.140 || ^0.146"
   },
   "devDependencies": {
-    "oxc-transform": "^0.146.0"
+    "oxc-transform": "^0.150.0"
   }
 }

@@ -48,6 +48,6 @@
     "access": "public"
   },
   "dependencies": {
-    "execa": "^9.6.1"
+    "execa": "^10.0.1"
   }
 }
