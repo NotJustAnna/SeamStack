@@ -42,12 +42,12 @@
   "dependencies": {
     "@seamstack/core": "workspace:*",
     "@rollup/plugin-typescript": "^12",
-    "@rollup/plugin-node-resolve": "^15"
+    "@rollup/plugin-node-resolve": "^16"
   },
   "peerDependencies": {
     "rollup": "^4"
   },
   "devDependencies": {
-    "rollup": "^4.62.5"
+    "rollup": "^4.63.5"
   }
 }
