@@ -20,12 +20,12 @@
     "create-seam": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^25.9.5",
-    "execa": "^9.6.1",
+    "@types/node": "^26.6.4",
+    "execa": "^10.1.0",
     "get-port": "^7.2.0",
-    "playwright": "^1.62.1",
-    "tsx": "^4.23.12",
-    "verdaccio": "^6.10.0",
-    "vitest": "^4.1.11"
+    "playwright": "^1.64.0",
+    "tsx": "^4.23.15",
+    "verdaccio": "^6.10.5",
+    "vitest": "^5.0.3"
   }
 }

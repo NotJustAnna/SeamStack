@@ -49,13 +49,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@clack/prompts": "^1.7.0",
-    "cac": "^7.0.0",
-    "handlebars": "^4.7.9",
+    "@clack/prompts": "^1.8.1",
+    "cac": "^7.0.1",
+    "handlebars": "^4.7.10",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
-    "@types/node": "^25.9.5",
-    "tsx": "^4.23.12"
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15"
   }
 }
