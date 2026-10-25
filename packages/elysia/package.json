@@ -52,6 +52,6 @@
     "elysia": "^1.2"
   },
   "devDependencies": {
-    "elysia": "^1.4.29"
+    "elysia": "^1.4.30"
   }
 }
